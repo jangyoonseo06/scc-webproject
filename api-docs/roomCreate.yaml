@@ -1,0 +1,145 @@
+openapi: 3.0.0
+info:
+  title: 방 생성 API 문서
+  description: 방 생성 기능을 제공하는 RESTful API 명세서
+  version: 1.0.0
+
+servers:
+  - url: https://api.example.com/v1
+    description: Production Server
+
+paths:
+  /rooms/create:
+    post:
+      summary: 방 생성
+      description: 방 이름, 인원 수를 받아 방 생성
+      tags:
+        - Room
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        description: 방 이름, 인원수
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoomCreateRequest'
+      responses:
+        '201':
+          description: 방 생성 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoomCreateResponse'
+        '400':
+          description: 잘못된 요청 (필수값 누락 등)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                ValidationError:
+                  summary: 유효성 검사 실패 예시
+                  value:
+                    status: 400
+                    error: "Bad Request"
+                    message: "입력값이 올바르지 않습니다"
+                    details:
+                      - field: "roomName"
+                        reason: "방 이름은 1글자 이상 10글자 이하여야 합니다"
+        '401':
+          description: 인증 실패
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                Unauthorized:
+                  summary: 권한 없음 예시
+                  value:
+                    status: 401
+                    error: "Unauthorized"
+                    message: "유효하지 않은 토큰입니다"
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    RoomCreateRequest:
+      type: object
+      required:
+        - roomName
+        - roomMembersNumber
+      properties:
+        roomName:
+          type: string
+          minLength: 1
+          maxLength: 10
+          example: 'scc'
+          description: 방 이름
+        roomMembersNumber:
+          type: integer
+          minimum: 1
+          maximum: 10
+          example: 4
+          description: 인원 수(최대 10, 최소 1)
+
+    RoomCreateResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: "방 생성 성공"
+        data:
+          type: object
+          properties:
+            roomId:
+              type: integer
+              example: 1234
+            roomName:
+              type: string
+              example: 'scc'
+            roomMembersNumber:
+              type: integer
+              description: "방 인원 수"
+              example: 4
+            inviteCode:
+              type: string
+              description: "초대 코드"
+              example: 'ABC123'
+
+    ErrorResponse:
+      type: object
+      required:
+        - status
+        - error
+        - message
+      properties:
+        status:
+          type: integer
+          example: 400
+        error:
+          type: string
+          example: "Bad Request"
+        message:
+          type: string
+          example: "에러에 대한 상세 메시지"
+        details:
+          type: array
+          description: "유효성 검사 실패"
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                example: "password"
+              reason:
+                type: string
+                example: "비밀번호는 8자 이상이어야 합니다."

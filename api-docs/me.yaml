@@ -1,0 +1,116 @@
+openapi: 3.0.0
+info:
+  title: 내 정보 API 문서
+  description: 사용자의 내 정보 조회 기능을 제공하는 RESTful API 명세입니다.
+  version: 1.0.0
+
+servers:
+  - url: https://api.example.com/v1
+    description: Production Server
+
+paths:
+  /auth/me:
+    get:
+      summary: 내 정보
+      description: 헤더에 포함된 유효한 토큰을 기반으로 내 정보 조회 기능을 수행합니다.
+      tags:
+        - Authentication
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: 내 정보 조회 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MeResponse'
+        '401':
+          description: 인증 실패
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                Unauthorized:
+                  summary: 권한 없음 예시
+                  value:
+                    status: 401
+                    error: "Unauthorized"
+                    message: "유효하지 않은 토큰입니다"
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    MeResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: "내 정보 조회가 성공적으로 완료되었습니다."
+        data:
+          type: object
+          properties:
+            userId:
+              type: integer
+              example: 1042
+            email:
+              type: string
+              example: "user@example.com"
+            name:
+              type: string
+              example: "홍길동"
+            rooms:
+              type: array
+              description: "참여한 방 목록"
+              example: ["room1", "room2"]
+              items:
+                type: string
+            diaries:
+              type: array
+              description: "작성한 일기 목록"
+              example: ["diary1", "diary2"]
+              items:
+                type: string
+            tmis:
+              type: array
+              description: "작성한 tmi 목록"
+              example: ["tmi1", "tmi2"]
+              items:
+                type: string
+
+    ErrorResponse:
+      type: object
+      required:
+        - status
+        - error
+        - message
+      properties:
+        status:
+          type: integer
+          example: 400
+        error:
+          type: string
+          example: "Bad Request"
+        message:
+          type: string
+          example: "에러에 대한 상세 메시지"
+        details:
+          type: array
+          description: "유효성 검사 실패"
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                example: "password"
+              reason:
+                type: string
+                example: "비밀번호는 8자 이상이어야 합니다."
