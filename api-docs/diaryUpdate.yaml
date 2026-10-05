@@ -1,0 +1,161 @@
+openapi: 3.0.0
+info:
+  title: 일기 수정 API 문서
+  description: 일기 수정 기능을 제공하는 RESTful API 명세서
+  version: 1.0.0
+
+servers:
+  - url: https://api.example.com/v1
+    description: Production Server
+
+paths:
+  /diaries/{diaryId}:
+    put:
+      summary: 일기 수정
+      description: 일기 ID를 통해 기존에 작성된 일기 수정
+      tags:
+        - Diary
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: diaryId
+          in: path
+          required: true
+          description: 수정할 일기 고유 ID
+          schema:
+            type: integer
+            example: 1001
+      requestBody:
+        required: true
+        description: 수정한 일기 정보
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DiaryUpdateRequest'
+      responses:
+        '200':
+          description: 일기 수정 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DiaryUpdateResponse'
+        '400':
+          description: 잘못된 요청 (필수 값 누락 등)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                validationError:
+                  value:
+                    status: 400
+                    error: "Bad Request"
+                    message: "입력값이 올바르지 않습니다"
+                    details:
+                      - field : "content"
+                        reason : "내용은 필수 입력값입니다."
+        '401':
+          description: 인증 실패
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                Unauthorized:
+                  value:
+                    status: 401
+                    error: "Unauthorized"
+                    message: "유효하지 않은 토큰입니다"
+        
+        '404':
+          description: 일기 미존재 또는 권한 없음
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                NotFound:
+                  value:
+                    status: 404
+                    error: "Not Found"
+                    message: "해당 일기를 찾을 수 없습니다."
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    DiaryUpdateRequest:
+      type: object
+      required:
+        - content
+        - questionToFriend
+        - emotion
+      properties:
+        content:
+          type: string
+          minLength: 1
+          maxLength: 2000
+          example: "오늘의 무엇을 했다"
+          description: 오늘의 일기 작성
+        questionToFriend:
+          type: string
+          minLength: 1
+          maxLength: 100
+          example: "너는 오늘 뭐 했어?"
+          description: 친구에게 질문 한마디
+        emotion:
+          type: string
+          enum: [HAPPY, CALM, NORMAL, UPSET, TIRED, EXCITED]
+          example: "HAPPY"
+          description: 오늘의 감정
+    
+    DiaryUpdateResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: "일기 수정 성공"
+        data:
+          type: object
+          properties:
+            diaryId:
+              type: integer
+              description: 수정된 일기의 고유 ID
+              example: 1001
+
+    ErrorResponse:
+      type: object
+      required:
+        - status
+        - error
+        - message
+      properties:
+        status:
+          type: integer
+          example: 401
+        error:
+          type: string
+          example: "Unauthorized"
+        message:
+          type: string
+          example: "인증 실패"
+        details:
+          type: array
+          description: "유효성 검사 실패"
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                example: "password"
+              reason:
+                type: string
+                example: "비밀번호는 8자 이상이어야 합니다."
+          example: "인증 실패"

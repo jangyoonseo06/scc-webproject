@@ -1,0 +1,113 @@
+openapi: 3.0.0
+info:
+  title: 사용자별 정답률, 특정 멤버 TMI 맞힌 비율, 거짓말 탐지 성공률 조회 API 문서
+  description: 사용자별 정답률, 특정 멤버 TMI 맞힌 비율, 거짓말 탐지 성공률 조회 기능을 제공하는 RESTful API 명세서
+  version: 1.0.0
+
+servers:
+  - url: https://api.example.com/v1
+    description: Production Server
+
+paths:
+  /tmi/statistics:
+    get:
+      summary: 사용자별 정답률, 특정 멤버 TMI 맞힌 비율, 거짓말 탐지 성공률 조회
+      description: 사용자별 정답률, 특정 멤버 TMI 맞힌 비율, 거짓말 탐지 성공률 등 tmi 기능 통계 조회
+      tags:
+        - Tmi
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: 사용자별 정답률 등 통계 정보 조회 성공 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/statisticsResponse'
+        '401':
+          description: 인증 실패
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                Unauthorized:
+                  value:
+                    status: 401
+                    error: "Unauthorized"
+                    message: "유효하지 않은 토큰입니다."
+        '404':
+          description: 통계 미존재
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                NotFound:
+                  value:
+                    status: 404
+                    error: "NotFound"
+                    message: "해당 통계를 찾을 수 없습니다."
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    statisticsResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: "통계 조회 성공"
+        data:
+          type: object
+          properties:
+            correctRate:
+              type: integer
+              example: 70
+              description: 사용자별 정답률
+            guessRate:
+              type: integer
+              example: 50
+              description: 특정 친구 TMI 맞힌 비율
+            successRate:
+              type: integer
+              example: 10
+              description: 거짓말 탐지 성공률
+
+    ErrorResponse:
+      type: object
+      required:
+        - status
+        - error
+        - message
+      properties:
+        status:
+          type: integer
+          example: 401
+        error:
+          type: string
+          example: "Unauthorized"
+        message:
+          type: string
+          example: "인증 실패"
+        details:
+          type: array
+          description: "유효성 검사 실패"
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                example: "password"
+              reason:
+                type: string
+                example: "비밀번호는 8자 이상이어야 합니다."
+          example: "인증 실패"

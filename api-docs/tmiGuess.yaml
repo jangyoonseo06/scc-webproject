@@ -1,0 +1,148 @@
+openapi: 3.0.0
+info:
+  title: tmi 작성자 추리 투표 및 점수 저장 API 문서
+  description: tmi 작성자 추리 투표 및 점수 저장 기능을 제공하는 RESTful API 명세서
+  version: 1.0.0
+
+servers:
+  - url: https://api.example.com/v1
+    description: Production Server
+
+paths:
+  /tmi/{tmiId}/guess:
+    post:
+      summary: tmi 작성자 추리 투표 및 점수 저장
+      description: 방 ID를 통해 tmi 작성자 추리 투표 및 점수 저장
+      tags:
+        - Tmi
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: tmiId
+          in: path
+          required: true
+          description: 추리 대상 TMI의 ID
+          schema:
+            type: integer
+            example: 1234
+      requestBody: 
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TmiGuessRequest'
+      responses:
+        '200':
+          description: tmi 작성자 추리 투표 제출 및 채점 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TmiGuessResponse'
+        '400':
+          description: 잘못된 요청 (필수 값 누락 등)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                ValidationError:
+                  value:
+                    status: 400
+                    error: "Bad Request"
+                    message: "입력값이 올바르지 않습니다."
+        '401':
+          description: 인증 실패
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                Unauthorized:
+                  value:
+                    status: 401
+                    error: "Unauthorized"
+                    message: "유효하지 않은 토큰입니다."
+        '404':
+          description: TMI 미존재
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                NotFound:
+                  value:
+                    status: 404
+                    error: "NotFound"
+                    message: "해당 TMI을 찾을 수 없습니다."
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    TmiGuessRequest:
+      type: object
+      required:
+        - guessedUserId
+      properties:
+        guessedUserId:
+          type: integer
+          example: 42
+          description: 내가 추리한 작성자의 고유 사용자 ID
+    TmiGuessResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: "채점 완료"
+        data:
+          type: object
+          properties:
+            isCorrect:
+              type: boolean
+              example: true
+              description: 정답 맞힘 여부
+            actualAuthorName:
+              type: string
+              example: "홍길동"
+              description: 실제 TMI 작성자 이름
+            accumulatedScore:
+              type: integer
+              example: 10
+              description: 정답을 맞춰 누적된 점수
+
+    ErrorResponse:
+      type: object
+      required:
+        - status
+        - error
+        - message
+      properties:
+        status:
+          type: integer
+          example: 401
+        error:
+          type: string
+          example: "Unauthorized"
+        message:
+          type: string
+          example: "인증 실패"
+        details:
+          type: array
+          description: "유효성 검사 실패"
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                example: "password"
+              reason:
+                type: string
+                example: "비밀번호는 8자 이상이어야 합니다."
+          example: "인증 실패"
