@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/rooms")
+@RequestMapping("/v1/rooms")
 public class RoomController {
 
     private final RoomService roomService;
@@ -19,7 +19,7 @@ public class RoomController {
     }
 
     // Î∞?ÎßåÎì§Í∏?
-    @PostMapping
+    @PostMapping("/create")
     public ResponseEntity<Room> createRoom(
             @RequestBody CreateRoomRequest request) {
 
@@ -57,7 +57,6 @@ public class RoomController {
 
         return ResponseEntity.ok(response);
     }
-
 
     // Î∞??ùÏÑ± ?îÏ≤≠ DTO
     public static class CreateRoomRequest {

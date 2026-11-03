@@ -10,6 +10,7 @@ import com.example.sccdiary.exception.UserNotFoundException;
 import com.example.sccdiary.repository.RefreshTokenRepository;
 import com.example.sccdiary.repository.UserRepository;
 import com.example.sccdiary.util.JwtProvider;
+import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.stereotype.Service;
@@ -70,7 +71,7 @@ public class AuthService {
                 "로그인에 성공하였습니다.",
                 new LoginResponse.Data(accessToken,
                         refreshToken,
-                        "Beater",
+                        "Bearer",
                         3600L)
         );
     }
@@ -90,10 +91,12 @@ public class AuthService {
 
     public MyInfoResponse myinfo(String token) {
 
-        RefreshToken refreshTokenEntity = refreshTokenRepository.findByRefreshToken(token)
-                .orElseThrow(() -> new UnauthorizedToken("유효하지 않은 토큰입니다"));
+        if (!jwtProvider.validateToken(token)) {
+            throw new UnauthorizedToken("유효하지 않은 토큰입니다");
+        }
+        String email = jwtProvider.getEmail(token);
 
-        User savedUser = userRepository.findByEmail(refreshTokenEntity.getEmail())
+        User savedUser = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException("해당 사용자를 찾을 수 없습니다"));
 
         return new MyInfoResponse(

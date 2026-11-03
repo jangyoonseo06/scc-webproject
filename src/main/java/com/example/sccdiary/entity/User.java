@@ -26,6 +26,12 @@ public class User {
     @Column(name = "nickname", nullable = false, length = 50)
     private String name;
 
+    @Column(nullable = false)
+    private Integer score = 0;
+    public void addScore(int points) {
+        this.score += points;
+    }
+
     @Builder
     public User(String email, String password, String name) {
         this.email = email;
