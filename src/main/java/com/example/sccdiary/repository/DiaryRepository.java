@@ -1,6 +1,6 @@
-package me.shinsunyoung.springbootdeveloper.repository;
+package com.example.sccdiary.repository;
 
-import me.shinsunyoung.springbootdeveloper.entity.Diary;
+import com.example.sccdiary.entity.Diary;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDate;

@@ -1,4 +1,6 @@
-package me.shinsunyoung.springbootdeveloper.dto;
+package com.example.sccdiary.dto;
+
+import lombok.Getter;
 
 import java.time.LocalDate;
 

@@ -1,4 +1,4 @@
-package me.shinsunyoung.springbootdeveloper.entity;
+package com.example.sccdiary.entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;

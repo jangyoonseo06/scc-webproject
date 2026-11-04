@@ -20,22 +20,17 @@ public class RoomService {
         this.roomMemberRepository = roomMemberRepository;
     }
 
-    // ë°?ë§Œë“¤ê¸?
-    public Room createRoom(String roomName, Long userId) {
 
-        // 1. 6?ë¦¬ ì´ˆë? ì½”ë“œ ?ì„±
+    public Room createRoom(String roomName, Long userId) {
         String inviteCode = createInviteCode();
 
-        // 2. ë°?ê°ì²´ ?ì„±
         Room room = new Room();
         room.setRoomName(roomName);
         room.setInviteCode(inviteCode);
         room.setCreatedBy(userId);
 
-        // 3. rooms ?Œì´ë¸”ì— ?€??
         Room savedRoom = roomRepository.save(room);
 
-        // 4. ë°©ì„ ë§Œë“  ?¬ëŒ??ë°?ë©¤ë²„ë¡??±ë¡
         RoomMember roomMember = new RoomMember();
         roomMember.setRoomId(savedRoom.getRoomId());
         roomMember.setUserId(userId);
@@ -45,45 +40,34 @@ public class RoomService {
         return savedRoom;
     }
 
-
-    // ???¬ê¸°ë¶€???ˆë¡œ ì¶”ê? ??
-    // ì´ˆë? ì½”ë“œë¡?ë°?ì°¸ì—¬
     public Room joinRoom(String inviteCode, Long userId) {
 
-        // 1. ì´ˆë? ì½”ë“œ???´ë‹¹?˜ëŠ” ë°?ì°¾ê¸°
         Room room = roomRepository.findByInviteCode(inviteCode)
                 .orElseThrow(() ->
-                        new IllegalArgumentException("? íš¨?˜ì? ?Šì? ì´ˆë? ì½”ë“œ?…ë‹ˆ??"));
+                        new IllegalArgumentException("?ï¿½íš¨?ï¿½ï¿½? ?ï¿½ï¿½? ì´ˆï¿½? ì½”ë“œ?ï¿½ë‹ˆ??"));
 
         Long roomId = room.getRoomId();
 
-        // 2. ?´ë? ì°¸ì—¬???¬ìš©?ì¸ì§€ ?•ì¸
         if (roomMemberRepository.existsByRoomIdAndUserId(roomId, userId)) {
-            throw new IllegalArgumentException("?´ë? ì°¸ì—¬??ë°©ì…?ˆë‹¤.");
+            throw new IllegalArgumentException("?ï¿½ï¿½? ì°¸ì—¬??ë°©ì…?ï¿½ë‹¤.");
         }
 
-        // 3. ?„ì¬ ë°??¸ì› ?•ì¸
         int currentMembers =
                 roomMemberRepository.findByRoomId(roomId).size();
 
         if (currentMembers >= room.getMaxMembers()) {
-            throw new IllegalArgumentException("ë°??•ì›??ê°€??ì°¼ìŠµ?ˆë‹¤.");
+            throw new IllegalArgumentException("ï¿½??ï¿½ì›??ê°€??ì°¼ìŠµ?ï¿½ë‹¤.");
         }
 
-        // 4. room_members ?Œì´ë¸”ì— ?¬ìš©??ì¶”ê?
         RoomMember roomMember = new RoomMember();
         roomMember.setRoomId(roomId);
         roomMember.setUserId(userId);
 
         roomMemberRepository.save(roomMember);
 
-        // 5. ì°¸ì—¬??ë°?ë°˜í™˜
         return room;
     }
-    // ???¬ê¸°ê¹Œì? ?ˆë¡œ ì¶”ê? ??
 
-
-    // 6?ë¦¬ ì´ˆë? ì½”ë“œ ?ì„±
     private String createInviteCode() {
         return UUID.randomUUID()
                 .toString()

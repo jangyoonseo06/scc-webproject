@@ -1,14 +1,11 @@
-package me.shinsunyoung.springbootdeveloper.service;
+package com.example.sccdiary.service;
 
-
-
-import me.shinsunyoung.springbootdeveloper.entity.Diary;
+import com.example.sccdiary.entity.Diary;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import me.shinsunyoung.springbootdeveloper.repository.DiaryRepository;
+import com.example.sccdiary.repository.DiaryRepository;
 import org.springframework.stereotype.Service;
 import java.util.List;
-import java.time.LocalDate;
 
 @Service
 public class DiaryService {

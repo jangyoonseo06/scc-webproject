@@ -1,9 +1,8 @@
-package me.shinsunyoung.springbootdeveloper.controller;
+package com.example.sccdiary.controller;
 
-import me.shinsunyoung.springbootdeveloper.dto.DiaryRequest;
-import me.shinsunyoung.springbootdeveloper.entity.Diary;
-import me.shinsunyoung.springbootdeveloper.service.DiaryService;
-
+import com.example.sccdiary.dto.DiaryRequest;
+import com.example.sccdiary.entity.Diary;
+import com.example.sccdiary.service.DiaryService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
