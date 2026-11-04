@@ -54,4 +54,16 @@ public class TmiController {
         TmiGuessResponse response = tmiService.guessTmiAuthor(token, tmiId, request);
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/tmi/statistics")
+    public ResponseEntity<TmiStatisticsResponse> getTmiStatistics(
+            @RequestHeader("Authorization") String token) {
+
+        if (token != null && token.startsWith("Bearer ")) {
+            token = token.substring(7);
+        }
+
+        TmiStatisticsResponse response = tmiService.getTmiStatistics(token);
+        return ResponseEntity.ok(response);
+    }
 }
