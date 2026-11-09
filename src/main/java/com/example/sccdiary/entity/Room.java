@@ -20,7 +20,6 @@ public class Room {
     @Column(name = "created_by", nullable = false)
     private Long createdBy;
 
-    // 최�? 참여 ?�원
     @Column(name = "max_members", nullable = false)
     private Integer maxMembers;
 

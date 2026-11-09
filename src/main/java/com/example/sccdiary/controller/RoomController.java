@@ -1,11 +1,20 @@
 package com.example.sccdiary.controller;
 
+import com.example.sccdiary.dto.InviteCodeResponse;
+import com.example.sccdiary.dto.RoomCreateRequest;
+import com.example.sccdiary.dto.RoomCreateResponse;
 import com.example.sccdiary.entity.Room;
+import com.example.sccdiary.entity.User;
+import com.example.sccdiary.service.AuthService;
 import com.example.sccdiary.service.RoomService;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -13,76 +22,82 @@ import java.util.Map;
 public class RoomController {
 
     private final RoomService roomService;
+    private final AuthService authService;
 
-    public RoomController(RoomService roomService) {
+    public RoomController(RoomService roomService, AuthService authService) {
         this.roomService = roomService;
+        this.authService = authService;
     }
 
-    // �?만들�?
     @PostMapping("/create")
-    public ResponseEntity<Room> createRoom(
-            @RequestBody CreateRoomRequest request) {
+    public ResponseEntity<RoomCreateResponse> createRoom(
+            @RequestHeader("Authorization") String token,
+            @Valid @RequestBody RoomCreateRequest request) {
+
+        if (token != null && token.startsWith("Bearer ")) {
+            token = token.substring(7);
+        }
+        Long userId = authService.getUserIdFromToken(token);
 
         Room room = roomService.createRoom(
-                request.getRoomName(),
-                request.getUserId()
-        );
+                request.roomName(), request.roomMembersNumber(), userId);
 
-        return ResponseEntity.ok(room);
+        RoomCreateResponse response = new RoomCreateResponse(
+                true,
+                "방 생성 성공",
+                new RoomCreateResponse.Data(
+                        room.getRoomId(),
+                        room.getRoomName(),
+                        room.getMaxMembers(),
+                        room.getInviteCode()));
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    @GetMapping("/{roomId}/invite-code")
+    public ResponseEntity<InviteCodeResponse> getInviteCode(
+            @RequestHeader("Authorization") String token,
+            @PathVariable Long roomId) {
 
-    // =========================
-    // 초�? 코드�?�?참여
-    // =========================
+        if (token != null && token.startsWith("Bearer ")) {
+            token = token.substring(7);
+        }
+
+        Long userId = authService.getUserIdFromToken(token);
+
+        String inviteCode = roomService.getInviteCode(roomId, userId);
+
+        return ResponseEntity.ok(new InviteCodeResponse(
+                true,
+                "초대코드 조회 성공",
+                new InviteCodeResponse.Data(inviteCode)));
+    }
+
     @PostMapping("/join")
     public ResponseEntity<Map<String, Object>> joinRoom(
+            @RequestHeader("Authorization") String token,
             @RequestBody JoinRoomRequest request) {
 
-        Room room = roomService.joinRoom(
-                request.getInviteCode(),
-                request.getUserId()
-        );
+        if (token != null && token.startsWith("Bearer ")) {
+            token = token.substring(7);
+        }
+        Long userId = authService.getUserIdFromToken(token);
 
-        // ?�론?�에 ?�달??data
+        Room room = roomService.joinRoom(request.getInviteCode(), userId);
+
+
         Map<String, Object> data = new HashMap<>();
         data.put("roomId", room.getRoomId());
         data.put("roomName", room.getRoomName());
 
-        // 최종 ?�답
         Map<String, Object> response = new HashMap<>();
         response.put("success", true);
-        response.put("message", "�?참여 ?�공");
+        response.put("message", "방 참여 성공");
         response.put("data", data);
 
         return ResponseEntity.ok(response);
     }
 
-    // �??�성 ?�청 DTO
-    public static class CreateRoomRequest {
-
-        private String roomName;
-        private Long userId;
-
-        public String getRoomName() {
-            return roomName;
-        }
-
-        public void setRoomName(String roomName) {
-            this.roomName = roomName;
-        }
-
-        public Long getUserId() {
-            return userId;
-        }
-
-        public void setUserId(Long userId) {
-            this.userId = userId;
-        }
-    }
-
-
-    // �?참여 ?�청 DTO
     public static class JoinRoomRequest {
 
         private String inviteCode;
@@ -103,5 +118,35 @@ public class RoomController {
         public void setUserId(Long userId) {
             this.userId = userId;
         }
+    }
+
+    @GetMapping("/{roomId}/members")
+    public ResponseEntity<Map<String, Object>> getMembers(
+            @RequestHeader("Authorization") String token,
+            @PathVariable Long roomId) {
+
+        if (token != null && token.startsWith("Bearer ")) {
+            token = token.substring(7);
+        }
+        Long userId = authService.getUserIdFromToken(token);
+
+        List<Map<String, Object>> members = roomService.getMembers(roomId, userId).stream()
+                .map(u -> {
+                    Map<String, Object> m = new LinkedHashMap<>();
+                    m.put("userId", u.getId());
+                    m.put("name", u.getName());
+                    return m;
+                })
+                .toList();
+
+        Map<String, Object> data = new LinkedHashMap<>();
+        data.put("members", members);
+
+        Map<String, Object> response = new LinkedHashMap<>();
+        response.put("success", true);
+        response.put("message", "방 멤버 목록 조회 성공");
+        response.put("data", data);
+
+        return ResponseEntity.ok(response);
     }
 }

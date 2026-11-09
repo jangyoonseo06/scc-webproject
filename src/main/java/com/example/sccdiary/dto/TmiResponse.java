@@ -15,6 +15,6 @@ public class TmiResponse {
     public static class TmiData {
         private Long tmiId;
         private String content;
-        private boolean isFake;
+        private Boolean isFake;
     }
 }

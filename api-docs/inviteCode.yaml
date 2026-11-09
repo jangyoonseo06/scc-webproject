@@ -32,6 +32,20 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/InviteCodeResponse'
+
+        '400':
+          description: 해당 방의 멤버가 아님
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                NotMember:
+                  value:
+                    status: 400
+                    error: "Bad Request"
+                    message: "방 멤버만 조회할 수 있습니다"
+
         '401':
           description: 인증 실패
           content:

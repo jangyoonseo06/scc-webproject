@@ -106,7 +106,7 @@ components:
             isFake:
               type: boolean
               example: true
-              description: TMI의 진위 여부
+              description: 거짓 TMI 여부 (true이면 거짓 TMI)
             
 
     ErrorResponse:
