@@ -23,6 +23,7 @@ public class TmiReadResponse {
     public static class TmiElement {
         private Long tmiId;
         private String content;
-        private Boolean isFake;
+        private Boolean isMine;
+        private Boolean hasGuessed;
     }
 }

@@ -112,5 +112,17 @@ public class AuthService {
                 ) //아직 방, 일기, tmi는 구현하지 않아 임시 값 넣음
         );
     }
+
+    public Long getUserIdFromToken(String token) {
+        if (!jwtProvider.validateToken(token)) {
+            throw new UnauthorizedToken("유효하지 않은 토큰입니다");
+        }
+        String email = jwtProvider.getEmail(token);
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException("해당 사용자를 찾을 수 없습니다"));
+
+        return user.getId();
+    }
 }
 

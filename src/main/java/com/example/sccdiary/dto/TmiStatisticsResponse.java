@@ -14,7 +14,7 @@ public class TmiStatisticsResponse {
     @AllArgsConstructor
     public static class StatisticsData {
         private Integer correctRate;
-        private Integer guessRate;
-        private Integer successRate;
+        private Long correctCount;
+        private Long totalGuesses;
     }
 }
