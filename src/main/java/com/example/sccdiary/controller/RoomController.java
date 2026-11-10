@@ -149,4 +149,34 @@ public class RoomController {
 
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/my")
+    public ResponseEntity<Map<String, Object>> getMyRooms(
+            @RequestHeader("Authorization") String token) {
+
+        if (token != null && token.startsWith("Bearer ")) {
+            token = token.substring(7);
+        }
+        Long userId = authService.getUserIdFromToken(token);
+
+        List<Map<String, Object>> rooms = roomService.getMyRooms(userId).stream()
+                .map(r -> {
+                    Map<String, Object> m = new LinkedHashMap<>();
+                    m.put("roomId", r.getRoomId());
+                    m.put("roomName", r.getRoomName());
+                    m.put("roomMembersNumber", r.getMaxMembers());
+                    return m;
+                })
+                .toList();
+
+        Map<String, Object> data = new LinkedHashMap<>();
+        data.put("rooms", rooms);
+
+        Map<String, Object> response = new LinkedHashMap<>();
+        response.put("success", true);
+        response.put("message", "내 방 목록 조회 성공");
+        response.put("data", data);
+
+        return ResponseEntity.ok(response);
+    }
 }

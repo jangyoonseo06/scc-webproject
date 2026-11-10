@@ -108,4 +108,8 @@ public class RoomService {
 
         return userRepository.findAllById(userIds);
     }
+
+    public List<Room> getMyRooms(Long userId) {
+        return roomRepository.findAllByMemberUserId(userId);
+    }
 }
