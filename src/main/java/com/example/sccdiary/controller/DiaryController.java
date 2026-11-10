@@ -2,13 +2,12 @@ package com.example.sccdiary.controller;
 
 import com.example.sccdiary.dto.DiaryRequest;
 import com.example.sccdiary.entity.Diary;
+import com.example.sccdiary.service.AuthService;
 import com.example.sccdiary.service.DiaryService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import org.springframework.web.bind.annotation.*;
-import org.springframework.http.ResponseEntity;
 import java.util.Map;
 
 @RestController
@@ -16,17 +15,30 @@ import java.util.Map;
 public class DiaryController {
 
     private final DiaryService diaryService;
+    private final AuthService authService; // 💡 AuthService 주입
 
-    public DiaryController(DiaryService diaryService) {
+    public DiaryController(DiaryService diaryService, AuthService authService) {
         this.diaryService = diaryService;
+        this.authService = authService;
     }
 
+    // 일기 작성 API
     @PostMapping("/write")
-    public ResponseEntity<?> writeDiary(@RequestBody DiaryRequest request) {
+    public ResponseEntity<?> writeDiary(
+            @RequestHeader("Authorization") String token,  // 💡 Bearer 토큰 수신
+            @RequestParam("roomId") Long roomId,           // 💡 URL 쿼리 파라미터로 roomId 수신
+            @RequestBody DiaryRequest request
+    ) {
+        // 1. 토큰에서 userId 추출
+        if (token != null && token.startsWith("Bearer ")) {
+            token = token.substring(7);
+        }
+        Long userId = authService.getUserIdFromToken(token);
 
+        // 2. 일기 생성 서비스 호출
         Diary diary = diaryService.createDiary(
-                request.getRoomId(),
-                request.getUserId(),
+                roomId,
+                userId,
                 request.getContent(),
                 request.getEmotion(),
                 request.getQuestionToFriend(),
@@ -43,6 +55,7 @@ public class DiaryController {
         );
     }
 
+    // 일기 수정 API
     @PutMapping("/{diaryId}")
     public ResponseEntity<?> updateDiary(
             @PathVariable Long diaryId,
@@ -63,9 +76,10 @@ public class DiaryController {
                 )
         );
     }
+
+    // 일기 단건 조회 API
     @GetMapping("/{diaryId}")
     public ResponseEntity<?> getDiary(@PathVariable Long diaryId) {
-        // Service 내부에서 일기 존재 여부 및 다음 날 공개 조건 검증이 함께 진행됩니다.
         Diary diary = diaryService.getDiary(diaryId);
 
         return ResponseEntity.ok(
@@ -76,20 +90,10 @@ public class DiaryController {
                 )
         );
     }
-    // 특정 방(room) 기준 어제의 우리 조회 API
-    @GetMapping("/rooms/{roomId}/yesterday") // 전체 경로: /v1/diaries/rooms/{roomId}/yesterday
-    public ResponseEntity<?> getYesterdayDiaries(@PathVariable Long roomId) {
-        return ResponseEntity.ok(
-                Map.of(
-                        "success", true,
-                        "message", "어제의 우리 조회 성공",
-                        "data", diaryService.getYesterdayDiaries(roomId)
-                )
-        );
-    }
+
+    // 일기 삭제 API
     @DeleteMapping("/{diaryId}")
     public ResponseEntity<?> deleteDiary(@PathVariable Long diaryId) {
-
         diaryService.deleteDiary(diaryId);
 
         return ResponseEntity.ok(
@@ -99,6 +103,4 @@ public class DiaryController {
                 )
         );
     }
-
-
 }
