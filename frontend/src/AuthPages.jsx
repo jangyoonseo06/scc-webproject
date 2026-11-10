@@ -230,49 +230,69 @@ export function SignupPage({
   const [error, setError] =
     useState("");
 
-  const handleSignup = () => {
-    if (!name.trim()) {
-      setError(
-        "이름을 입력해주세요."
-      );
-      return;
-    }
+  const handleSignup = async () => {
+  if (!name.trim()) {
+    setError("이름을 입력해주세요.");
+    return;
+  }
 
-    if (!email.trim()) {
-      setError(
-        "이메일을 입력해주세요."
-      );
-      return;
-    }
+  if (!email.trim()) {
+    setError("이메일을 입력해주세요.");
+    return;
+  }
 
-    if (!password) {
-      setError(
-        "비밀번호를 입력해주세요."
-      );
-      return;
-    }
+  if (!password) {
+    setError("비밀번호를 입력해주세요.");
+    return;
+  }
 
-    if (
-      password !== passwordCheck
-    ) {
-      setError(
-        "비밀번호가 일치하지 않습니다."
-      );
-      return;
-    }
+  if (password !== passwordCheck) {
+    setError("비밀번호가 일치하지 않습니다.");
+    return;
+  }
 
-    if (!agree) {
-      setError(
-        "이용약관 및 개인정보처리방침에 동의해주세요."
-      );
-      return;
-    }
+  if (!agree) {
+    setError("이용약관 및 개인정보처리방침에 동의해주세요.");
+    return;
+  }
 
+  try {
     setError("");
 
-    // 회원가입 API는 아직 연결하지 않음
+    const response = await fetch(
+      `${API_BASE_URL}/auth/signup`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: email.trim(),
+          password: password,
+          name: name.trim(),
+        }),
+      }
+    );
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      if (response.status === 409) {
+        setError("이미 존재하는 이메일입니다.");
+      } else {
+        setError(
+          result.message || "회원가입에 실패했습니다."
+        );
+      }
+      return;
+    }
+
     onSignupComplete();
-  };
+  } catch (error) {
+    console.error("회원가입 오류:", error);
+    setError("서버에 연결할 수 없습니다.");
+  }
+};
 
   return (
     <div className="auth-page">
