@@ -1606,3 +1606,12 @@
     display: none;
   }
 }
+/* 일기 읽기 모달: 친구에게 질문 */
+.diary-modal-question {
+  margin: 0;
+  padding: 12px 16px;
+  border-radius: 12px;
+  color: #57504c;
+  background: #fdf2f3;
+  font-size: 15px;
+}
