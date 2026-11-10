@@ -39,8 +39,49 @@ body {
   font-weight: 800;
 }
 
-.logo-icon {
-  color: #d27484;
+.logo-icon,
+.auth-logo::before {
+  content: "";
+  width: 36px;
+  height: 31px;
+  display: inline-block;
+  background: url("../assets/design/logo-mail.svg") center / contain no-repeat;
+}
+
+.logo-icon > svg,
+.auth-logo > svg {
+  display: none;
+}
+
+/* 로그인 · 회원가입 상단 (시안 9·10) */
+.auth-header-inner {
+  width: min(1200px, 100%);
+  height: 66px;
+  border-radius: 16px;
+  background: rgba(255, 253, 251, 0.9);
+  box-shadow: 0 6px 20px rgba(150, 103, 96, 0.07);
+}
+
+.auth-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.auth-logo strong {
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.auth-nav span {
+  padding: 10px 22px;
+  border-radius: 12px;
+  font-size: 15px;
+}
+
+.auth-nav span:first-child {
+  color: #b55b6a;
+  background: #fbe3e6;
 }
 
 .nav {
@@ -57,6 +98,295 @@ body {
 .nav-item.active {
   color: #b55b6a;
   background: #fbe3e6;
+}
+
+/* ---------- 메인 (시안 8) ---------- */
+
+.hero,
+.dashboard-grid,
+.bottom-grid {
+  width: min(1200px, calc(100% - 96px));
+}
+
+.hero {
+  min-height: 0;
+  margin-top: 0;
+  padding: 26px 0 18px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 600px);
+  gap: 20px;
+}
+
+.hero-text {
+  padding-left: 0;
+}
+
+.hero h1 {
+  font-size: 48px;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+}
+
+.hero-text p {
+  color: #57504c;
+  font-size: 17px;
+}
+
+.primary-button {
+  min-height: 52px;
+  padding: 0 28px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #d07f8c, #bd6676);
+  box-shadow: 0 10px 22px rgba(189, 102, 118, 0.25);
+  font-size: 16px;
+  font-weight: 700;
+}
+
+/* 봉투 + 폴라로이드 그림 (시안 이미지) + 편지 글씨는 코드의 문구 그대로 */
+.hero-art,
+.auth-envelope-art {
+  width: 100%;
+  max-width: 600px;
+  height: auto;
+  aspect-ratio: 457 / 282;
+  justify-self: end;
+  background: url("../assets/design/room-hero.png") center / contain no-repeat;
+  -webkit-mask-image:
+    linear-gradient(to right, transparent, #000 8%, #000 94%, transparent),
+    linear-gradient(to bottom, transparent, #000 7%, #000 90%, transparent);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(to right, transparent, #000 8%, #000 94%, transparent),
+    linear-gradient(to bottom, transparent, #000 7%, #000 90%, transparent);
+  mask-composite: intersect;
+}
+
+.hero-art {
+  margin-top: -40px;
+}
+
+.auth-envelope-art {
+  max-width: 560px;
+  margin-top: 18px;
+}
+
+.hero-art .paper,
+.auth-paper,
+.auth-photo {
+  display: none;
+}
+
+.hero-art .envelope,
+.auth-envelope {
+  position: absolute;
+  inset: 0;
+  width: auto;
+  height: auto;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+}
+
+.hero-art .letter,
+.auth-letter {
+  position: absolute;
+  top: 31%;
+  left: 24%;
+  width: 40%;
+  height: auto;
+  padding: 0;
+  background: none;
+  box-shadow: none;
+  color: #3f3634;
+  font-family: var(--ui-hand);
+  font-size: 24px;
+  line-height: 1.45;
+  text-align: left;
+  transform: rotate(-3deg);
+  white-space: nowrap;
+}
+
+.hero-art .letter small,
+.auth-letter small {
+  display: block;
+  padding-left: 30%;
+  color: #3f3634;
+  font-size: inherit;
+}
+
+/* 메인 카드 공통 */
+.room-section,
+.bottom-card {
+  border: 8px solid rgba(255, 255, 255, 0.7);
+  border-radius: 22px;
+  background: rgba(255, 253, 251, 0.95);
+  box-shadow: 0 10px 30px rgba(150, 103, 96, 0.08);
+}
+
+.dashboard-grid {
+  grid-template-columns: 1.3fr 1fr 1fr;
+  gap: 16px;
+}
+
+/* 내 방 카드 */
+.room-section {
+  padding: 22px 24px;
+}
+
+.section-title-row h2 {
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.room-card {
+  background: transparent;
+}
+
+.room-cover {
+  width: 110px;
+  height: 110px;
+  border-radius: 12px;
+}
+
+.room-name-row h3 {
+  font-size: 18px;
+  font-weight: 800;
+}
+
+/* API 명세에 방 설정 기능 없음 */
+.room-name-row .settings-icon {
+  display: none;
+}
+
+.member-preview .avatar {
+  width: 40px;
+  height: 40px;
+  font-size: 15px;
+}
+
+.room-info p {
+  color: #6b615c;
+  font-size: 14px;
+}
+
+.invite-code-row {
+  padding-top: 16px;
+  border-top: 1px solid #f1e8e3;
+}
+
+.invite-label {
+  padding: 8px 16px;
+  border-radius: 10px;
+  color: #6b615c;
+  background: #f6efeb;
+  font-size: 14px;
+}
+
+.invite-code-row strong {
+  padding: 8px 22px;
+  border-radius: 12px;
+  color: #c4515f;
+  background: #fde8ea;
+  font-size: 20px;
+  letter-spacing: 0.08em;
+}
+
+/* 하단 카드 */
+.bottom-grid {
+  margin-top: 16px;
+  grid-template-columns: 1.15fr 1fr;
+  gap: 16px;
+}
+
+.bottom-card {
+  position: relative;
+  min-height: 160px;
+  padding: 24px 30px;
+}
+
+.bottom-card h3 {
+  margin-bottom: 14px;
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.bottom-card strong {
+  font-size: 17px;
+}
+
+.bottom-card p {
+  color: #6b615c;
+  font-size: 15px;
+  line-height: 1.65;
+}
+
+/* 어제의 우리: 사진 묶음 그림 위에 버튼 */
+.bottom-card.yesterday::before {
+  content: "";
+  position: absolute;
+  right: 26px;
+  top: 10px;
+  width: 210px;
+  height: 105px;
+  background: url("../assets/design/yesterday-photos.png") center / contain no-repeat;
+  pointer-events: none;
+}
+
+.bottom-card.yesterday > button {
+  position: relative;
+  z-index: 1;
+  align-self: flex-end;
+  margin-bottom: -4px;
+  padding: 12px 24px;
+  border: 1px solid #f6d3d8;
+  background: #fde8ea;
+  box-shadow: 0 6px 14px rgba(189, 102, 118, 0.12);
+}
+
+/* 오늘 쓴 일기는 내일 도착해요: 테이프 붙은 손글씨 쪽지 */
+.bottom-card.tomorrow .note-paper {
+  position: relative;
+  width: 170px;
+  padding: 26px 18px 18px;
+  border-radius: 4px;
+  background: #fbf6ef;
+  box-shadow: 0 6px 16px rgba(120, 80, 70, 0.1);
+  color: #4d4340;
+  font-family: var(--ui-hand);
+  font-size: 19px;
+  line-height: 1.5;
+  transform: rotate(3deg);
+}
+
+.bottom-card.tomorrow .note-paper::before {
+  content: "";
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  width: 58px;
+  height: 26px;
+  margin-left: -29px;
+  background: rgba(200, 200, 205, 0.55);
+  transform: rotate(-4deg);
+}
+
+/* ---------- 로그인 · 회원가입 (시안 9 · 10) ---------- */
+
+.auth-copy h1 {
+  font-weight: 800;
+  letter-spacing: -0.035em;
+}
+
+.auth-copy h1 span {
+  color: #c96f7e;
+}
+
+.auth-card {
+  border-radius: 22px;
+  box-shadow: 0 12px 34px rgba(150, 103, 96, 0.1);
+}
+
+.auth-primary-button {
+  background: linear-gradient(135deg, #d07f8c, #bd6676);
 }
 
 /* ---------- 기능 카드 (하루 시차 교환일기 · 익명 TMI 추리) ---------- */
@@ -112,8 +442,9 @@ body {
   letter-spacing: -0.02em;
 }
 
-.room-content-grid .feature-card h2 {
-  max-width: 6.5em;
+/* 시안처럼 "하루 시차 / 교환일기", "오늘의 / 교환일기 쓰기" 두 줄 */
+.feature-card h2 {
+  max-width: 5.65em;
 }
 
 .feature-card p {

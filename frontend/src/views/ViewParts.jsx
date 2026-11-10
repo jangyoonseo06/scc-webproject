@@ -60,6 +60,8 @@ export function EmotionBadge({ emotion }) {
 // 방 정보 카드 (방 이름 + 인원수)
 // members = GET /rooms/{roomId}/members 의 data.members
 export function RoomInfoCard({ roomName, members = [], className = "" }) {
+  if (!roomName) return null;
+
   return (
     <div className={`vw-room-card ${className}`}>
       <strong>{roomName}</strong>

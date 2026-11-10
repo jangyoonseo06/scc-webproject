@@ -5,6 +5,7 @@
 // ※ 시안의 "친구별 정답률", "맞힌/못 맞힌 친구"는 명세에 없어서 넣지 않았다.
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import heroArt from "../assets/design/tmi-result-hero.png";
+import { EmptyState } from "../components/status/StatusViews";
 import { ViewHero } from "./ViewParts";
 import "./views.css";
 
@@ -29,18 +30,25 @@ export default function TmiResultView({ tmiContent, result, members = [], onBack
         </p>
       </ViewHero>
 
-      <article className="vw-result-answer">
-        <span className="vw-result-chip">이 TMI의 작성자는</span>
+      {!result ? (
+        <EmptyState
+          title="아직 확인할 결과가 없어요"
+          description="친구의 TMI를 추리하면 여기에서 결과를 볼 수 있어요."
+        />
+      ) : (
+        <article className="vw-result-answer">
+          <span className="vw-result-chip">이 TMI의 작성자는</span>
 
-        <div className="vw-result-author">
-          <h2>
-            <span className="vw-rose">{result?.actualAuthorName}</span> 님이었습니다!
-          </h2>
-          <p>{members.length}명의 멤버와 함께하고 있어요.</p>
-        </div>
+          <div className="vw-result-author">
+            <h2>
+              <span className="vw-rose">{result.actualAuthorName}</span> 님이었습니다!
+            </h2>
+            <p>{members.length}명의 멤버와 함께하고 있어요.</p>
+          </div>
 
-        <blockquote className="vw-result-quote">{tmiContent}</blockquote>
-      </article>
+          {tmiContent && <blockquote className="vw-result-quote">{tmiContent}</blockquote>}
+        </article>
+      )}
 
       <div className="vw-result-actions">
         <button className="vw-btn outline" onClick={onBack}>
