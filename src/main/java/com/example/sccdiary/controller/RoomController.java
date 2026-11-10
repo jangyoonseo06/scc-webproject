@@ -6,6 +6,7 @@ import com.example.sccdiary.dto.RoomCreateResponse;
 import com.example.sccdiary.entity.Room;
 import com.example.sccdiary.entity.User;
 import com.example.sccdiary.service.AuthService;
+import com.example.sccdiary.service.DiaryService;
 import com.example.sccdiary.service.RoomService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -23,10 +24,12 @@ public class RoomController {
 
     private final RoomService roomService;
     private final AuthService authService;
+    private final DiaryService diaryService;
 
-    public RoomController(RoomService roomService, AuthService authService) {
+    public RoomController(RoomService roomService, AuthService authService, DiaryService diaryService) {
         this.roomService = roomService;
         this.authService = authService;
+        this.diaryService = diaryService;
     }
 
     @PostMapping("/create")
@@ -176,6 +179,16 @@ public class RoomController {
         response.put("success", true);
         response.put("message", "내 방 목록 조회 성공");
         response.put("data", data);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{roomId}/diaries/yesterday")
+    public ResponseEntity<Map<String, Object>> getYesterdayDiaries(@PathVariable Long roomId) {
+        Map<String, Object> response = new LinkedHashMap<>();
+        response.put("success", true);
+        response.put("message", "어제의 우리 조회 성공");
+        response.put("data", diaryService.getYesterdayDiaries(roomId));
 
         return ResponseEntity.ok(response);
     }

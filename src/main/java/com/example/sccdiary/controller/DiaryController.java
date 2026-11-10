@@ -12,7 +12,7 @@ import org.springframework.http.ResponseEntity;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/diaries")
+@RequestMapping("/v1/diaries")
 public class DiaryController {
 
     private final DiaryService diaryService;
@@ -64,21 +64,9 @@ public class DiaryController {
         );
     }
     @GetMapping("/{diaryId}")
-    public ResponseEntity<?> getDiary(
-            @PathVariable Long diaryId,
-            @RequestParam Long viewerId
-    ) {
+    public ResponseEntity<?> getDiary(@PathVariable Long diaryId) {
+        // Service 내부에서 일기 존재 여부 및 다음 날 공개 조건 검증이 함께 진행됩니다.
         Diary diary = diaryService.getDiary(diaryId);
-
-        // 일기 공개 여부 확인
-        if (!diaryService.canViewDiary(diary, viewerId)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
-                    Map.of(
-                            "success", false,
-                            "message", "이 일기는 다음 날부터 공개됩니다."
-                    )
-            );
-        }
 
         return ResponseEntity.ok(
                 Map.of(
@@ -88,10 +76,9 @@ public class DiaryController {
                 )
         );
     }
-    @GetMapping("/yesterday")
-    public ResponseEntity<?> getYesterdayDiaries(
-            @RequestParam Long roomId
-    ) {
+    // 특정 방(room) 기준 어제의 우리 조회 API
+    @GetMapping("/rooms/{roomId}/yesterday") // 전체 경로: /v1/diaries/rooms/{roomId}/yesterday
+    public ResponseEntity<?> getYesterdayDiaries(@PathVariable Long roomId) {
         return ResponseEntity.ok(
                 Map.of(
                         "success", true,
@@ -112,4 +99,6 @@ public class DiaryController {
                 )
         );
     }
+
+
 }

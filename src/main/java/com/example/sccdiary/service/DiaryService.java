@@ -41,10 +41,25 @@ public class DiaryService {
         return diaryRepository.save(diary);
     }
     public Diary getDiary(Long diaryId) {
-        return diaryRepository.findById(diaryId)
-                .orElseThrow(() ->
-                        new IllegalArgumentException("일기를 찾을 수 없습니다.")
-                );
+        // 1. DB에서 일기 조회
+        Diary diary = diaryRepository.findById(diaryId)
+                .orElseThrow(() -> new IllegalArgumentException("일기를 찾을 수 없습니다."));
+
+        // 2. 임시 저장 상태 체크
+        if (diary.isTemporary()) {
+            throw new IllegalStateException("임시 저장된 일기는 아직 공개되지 않습니다.");
+        }
+
+        // 3. 다음 날 공개 조건 체크 (getDate() -> getDiaryDate() 로 수정)
+        LocalDate diaryDate = diary.getDiaryDate();
+        LocalDate today = LocalDate.now();
+
+        // 작성일이 오늘이거나 미래인 경우 조회 불가 (어제 이전 일기만 공개)
+        if (!diaryDate.isBefore(today)) {
+            throw new IllegalStateException("이 일기는 작성 다음 날부터 공개됩니다.");
+        }
+
+        return diary;
     }
     public Diary updateDiary(
             Long diaryId,
@@ -85,15 +100,11 @@ public class DiaryService {
         return diary.getDiaryDate().isBefore(LocalDate.now());
     }
     public List<Diary> getYesterdayDiaries(Long roomId) {
-
-        // 오늘 날짜에서 하루 빼기
+        // 1. 어제 날짜 계산
         LocalDate yesterday = LocalDate.now().minusDays(1);
 
-        // 해당 방에서 어제 작성한 일기 조회
-        return diaryRepository.findByRoomIdAndDiaryDateAndIsTemporaryFalse(
-                roomId,
-                yesterday
-        );
+        // 2. 어제 작성되고 임시 저장이 아닌 일기 목록만 조회
+        return diaryRepository.findByRoomIdAndDiaryDateAndIsTemporaryFalse(roomId, yesterday);
     }
 
 
