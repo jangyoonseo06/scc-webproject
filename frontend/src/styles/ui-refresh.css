@@ -1,0 +1,310 @@
+/* =========================================================
+   App.jsx 화면 스타일 보정 (시안 1번 "내 방" 기준, 데스크톱)
+   - JSX 는 건드리지 않고 기존 클래스 스타일만 덮어쓴다.
+   - main.jsx 에서 App 다음에 import → App.css 보다 뒤에 적용.
+   ========================================================= */
+
+:root {
+  font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont,
+    "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  --ui-hand: "Nanum Pen Script", "Gaegu", cursive;
+}
+
+body {
+  color: #2a2422;
+  word-break: keep-all;
+}
+
+/* ---------- 상단 메뉴 ---------- */
+
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+}
+
+.header-inner {
+  width: min(1200px, 100%);
+  height: 66px;
+  padding: 0 32px;
+  border-radius: 16px;
+  background: rgba(255, 253, 251, 0.9);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 6px 20px rgba(150, 103, 96, 0.07);
+}
+
+.logo {
+  gap: 10px;
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.logo-icon {
+  color: #d27484;
+}
+
+.nav {
+  gap: 8px;
+  margin-left: 64px;
+}
+
+.nav-item {
+  padding: 10px 22px;
+  border-radius: 12px;
+  font-size: 15px;
+}
+
+.nav-item.active {
+  color: #b55b6a;
+  background: #fbe3e6;
+}
+
+/* ---------- 기능 카드 (하루 시차 교환일기 · 익명 TMI 추리) ---------- */
+
+.feature-card {
+  min-height: 300px;
+  padding: 28px 30px;
+  border: 8px solid rgba(255, 255, 255, 0.85);
+  border-radius: 22px;
+  box-shadow: 0 10px 30px rgba(150, 103, 96, 0.08);
+}
+
+.feature-card.diary {
+  background: linear-gradient(150deg, #fde8ea, #f9dde1);
+}
+
+.feature-card.tmi {
+  background: linear-gradient(150deg, #e9f3fc, #dbe9f7);
+}
+
+.feature-illustration {
+  height: 128px;
+  justify-content: flex-end;
+}
+
+.notebook,
+.question-card {
+  width: 190px;
+  height: 146px;
+  border-radius: 0;
+  background: center / contain no-repeat;
+  box-shadow: none;
+  transform: none;
+}
+
+.notebook {
+  background-image: url("../assets/design/feature-notebook.png");
+}
+
+.question-card {
+  background-image: url("../assets/design/feature-question.png");
+}
+
+.notebook > svg,
+.question-card > svg {
+  display: none;
+}
+
+.feature-card h2 {
+  margin: 10px 0 14px;
+  font-size: 30px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.room-content-grid .feature-card h2 {
+  max-width: 6.5em;
+}
+
+.feature-card p {
+  max-width: 16em;
+  color: #57504c;
+  font-size: 16px;
+  line-height: 1.65;
+}
+
+.round-arrow {
+  width: 56px;
+  height: 56px;
+  right: 24px;
+  bottom: 24px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, #cf7f8c, #b8697a);
+  box-shadow: 0 8px 18px rgba(189, 102, 118, 0.3);
+}
+
+.tmi .round-arrow {
+  background: linear-gradient(135deg, #6fa3d2, #4d84b6);
+  box-shadow: 0 8px 18px rgba(77, 132, 182, 0.3);
+}
+
+/* ---------- 내 방 (RoomPage) ---------- */
+
+.room-page {
+  width: min(1200px, calc(100% - 96px));
+  margin: 0 auto 64px;
+}
+
+/* 시안에 없는 링크 */
+.room-page > .back-button {
+  display: none;
+}
+
+/* API 명세에 데이터·기능이 없는 항목: 방 설정 버튼, 방 생성일, 멤버 상태 점 */
+.room-settings,
+.room-meta > span:nth-child(2),
+.member-item .status-dot {
+  display: none !important;
+}
+
+.room-hero {
+  min-height: 0;
+  padding-top: 26px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 560px);
+  gap: 20px;
+}
+
+.room-hero-text {
+  padding: 0;
+}
+
+.room-title-row {
+  gap: 16px;
+}
+
+.room-title-row h1 {
+  font-size: 50px;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+}
+
+.room-description {
+  margin: 22px 0;
+  color: #57504c;
+  font-size: 19px;
+  line-height: 1.7;
+}
+
+.room-meta {
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 26px;
+  color: #3d3532;
+  font-size: 16px;
+}
+
+.room-meta > span:first-child {
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.85);
+}
+
+.room-code-large {
+  padding: 16px 20px;
+  gap: 18px;
+  border: 1px solid #f3dadd;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.86);
+  box-shadow: 0 8px 22px rgba(150, 103, 96, 0.07);
+  font-weight: 700;
+}
+
+.room-code-large strong {
+  padding: 8px 22px;
+  border-radius: 12px;
+  color: #c4515f;
+  background: #fde8ea;
+  font-size: 26px;
+  letter-spacing: 0.08em;
+}
+
+.room-code-large button {
+  display: grid;
+  place-items: center;
+  color: #57504c;
+}
+
+/* 시안 이미지(봉투 + 폴라로이드) + 편지 글씨는 실제 방 이름으로 */
+.room-hero-art {
+  width: 100%;
+  max-width: 560px;
+  height: auto;
+  aspect-ratio: 457 / 282;
+  justify-self: end;
+  margin-top: -24px;
+  background: url("../assets/design/room-hero.png") center / contain no-repeat;
+  -webkit-mask-image:
+    linear-gradient(to right, transparent, #000 8%, #000 94%, transparent),
+    linear-gradient(to bottom, transparent, #000 7%, #000 90%, transparent);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(to right, transparent, #000 8%, #000 94%, transparent),
+    linear-gradient(to bottom, transparent, #000 7%, #000 90%, transparent);
+  mask-composite: intersect;
+}
+
+.large-envelope {
+  inset: 0;
+  width: auto;
+  height: auto;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+}
+
+.room-letter {
+  top: 31%;
+  left: 24%;
+  width: 38%;
+  height: auto;
+  padding: 0;
+  background: none;
+  box-shadow: none;
+  color: #3f3634;
+  font-family: var(--ui-hand);
+  font-size: 26px;
+  line-height: 1.45;
+  text-align: left;
+  transform: rotate(-3deg);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.room-content-grid {
+  margin-top: 18px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
+  gap: 16px;
+}
+
+.member-list-card {
+  padding: 24px 26px;
+  border: 0;
+  border-radius: 22px;
+  background: rgba(255, 253, 251, 0.96);
+  box-shadow: 0 10px 30px rgba(150, 103, 96, 0.08);
+}
+
+.member-list-card h2 {
+  font-size: 20px;
+}
+
+.member-item {
+  min-height: 80px;
+  gap: 4px;
+  border-top: 1px solid #f1e8e3;
+  font-size: 18px;
+}
+
+.member-avatar {
+  width: 54px;
+  height: 54px;
+  font-size: 20px;
+  font-weight: 800;
+  box-shadow: inset 0 0 0 3px rgba(255, 255, 255, 0.9), 0 3px 8px rgba(120, 80, 70, 0.1);
+}
+
+.member-avatar.avatar-1 { background: #f8dde1; color: #c25d6c; }
+.member-avatar.avatar-2 { background: #fbeccb; color: #b08425; }
+.member-avatar.avatar-3 { background: #dbe9f7; color: #4a80b0; }

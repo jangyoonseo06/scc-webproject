@@ -1,0 +1,212 @@
+/* 공통 상태 UI (로딩 · 빈 화면 · 오류 · 토스트) */
+
+.st-box {
+  margin: 12px 0;
+  padding: 52px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+  border-radius: 22px;
+  background: rgba(255, 253, 251, 0.95);
+  box-shadow: 0 10px 30px rgba(150, 103, 96, 0.08);
+}
+
+.st-box.compact {
+  padding: 28px 18px;
+  box-shadow: none;
+  background: transparent;
+}
+
+.st-icon {
+  width: 64px;
+  height: 64px;
+  margin-bottom: 4px;
+  display: grid;
+  place-items: center;
+  border-radius: 20px;
+}
+
+.st-icon.empty {
+  color: #c96f7e;
+  background: #fbe6e8;
+}
+
+.st-icon.error {
+  color: #c64b5c;
+  background: #fde5e7;
+}
+
+.st-title {
+  margin: 0;
+  color: #2b2523;
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.st-desc {
+  margin: 0;
+  color: #6b615c;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.st-btn {
+  min-height: 46px;
+  margin-top: 10px;
+  padding: 0 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 0;
+  border-radius: 14px;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.st-btn.primary {
+  color: #fff;
+  background: linear-gradient(135deg, #d4808d, #be6474);
+  box-shadow: 0 8px 18px rgba(190, 100, 116, 0.25);
+}
+
+.st-btn.soft {
+  color: #b45b6a;
+  background: #fbe6e8;
+}
+
+.st-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.st-rotating {
+  animation: st-rotate 0.9s linear infinite;
+}
+
+.st-spinner {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.st-spinner span {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #d98894;
+  animation: st-bounce 1s ease-in-out infinite;
+}
+
+.st-spinner span:nth-child(2) {
+  animation-delay: 0.15s;
+  background: #e8a7b1;
+}
+
+.st-spinner span:nth-child(3) {
+  animation-delay: 0.3s;
+  background: #9cc3e2;
+}
+
+@keyframes st-bounce {
+  0%,
+  80%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.55;
+  }
+  40% {
+    transform: translateY(-9px);
+    opacity: 1;
+  }
+}
+
+@keyframes st-rotate {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ---------- toast ---------- */
+
+.st-toast-stack {
+  position: fixed;
+  left: 50%;
+  bottom: 28px;
+  z-index: 1000;
+  width: min(420px, calc(100% - 32px));
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.st-toast {
+  padding: 13px 14px 13px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-radius: 16px;
+  color: #fff;
+  background: rgba(43, 37, 35, 0.92);
+  box-shadow: 0 14px 30px rgba(60, 40, 40, 0.22);
+  font-size: 15px;
+  font-weight: 600;
+  pointer-events: auto;
+  animation: st-toast-in 0.22s ease-out;
+}
+
+.st-toast-icon {
+  width: 26px;
+  height: 26px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+}
+
+.st-toast.success .st-toast-icon {
+  background: #6fbf86;
+}
+
+.st-toast.error .st-toast-icon {
+  background: #e06b7b;
+}
+
+.st-toast.info .st-toast-icon {
+  background: #6fa8d6;
+}
+
+.st-toast-text {
+  flex: 1;
+  min-width: 0;
+  word-break: keep-all;
+}
+
+.st-toast button {
+  flex: none;
+  display: grid;
+  place-items: center;
+  border: 0;
+  padding: 4px;
+  color: rgba(255, 255, 255, 0.7);
+  background: transparent;
+}
+
+@keyframes st-toast-in {
+  from {
+    transform: translateY(10px);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .st-spinner span,
+  .st-rotating,
+  .st-toast {
+    animation: none;
+  }
+}

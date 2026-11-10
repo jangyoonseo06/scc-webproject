@@ -1,0 +1,947 @@
+/* =========================================================
+   교환함 · 일기 / TMI 화면 (시안 기준, 데스크톱)
+   ========================================================= */
+
+.vw-page {
+  --vw-rose-50: #fdf2f3;
+  --vw-rose-100: #fbe4e7;
+  --vw-rose-200: #f5ccd2;
+  --vw-rose-400: #d98793;
+  --vw-rose-500: #c96f7e;
+  --vw-rose-600: #b55b6a;
+  --vw-ink: #2a2422;
+  --vw-ink-2: #57504c;
+  --vw-ink-3: #948a85;
+  --vw-line: #ece3de;
+  --vw-paper: #fbf6ef;
+  --vw-shadow: 0 10px 30px rgba(150, 103, 96, 0.08);
+  --vw-radius: 20px;
+  --vw-hand: "Nanum Pen Script", "Gaegu", cursive;
+
+  width: min(1200px, calc(100% - 96px));
+  margin: 0 auto 64px;
+  color: var(--vw-ink);
+  word-break: keep-all;
+}
+
+.vw-rose {
+  color: var(--vw-rose-500);
+}
+
+/* ---------- buttons ---------- */
+
+.vw-btn {
+  min-height: 54px;
+  padding: 0 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border: 0;
+  border-radius: 14px;
+  font-size: 17px;
+  font-weight: 700;
+  white-space: nowrap;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.vw-btn.primary {
+  color: #fff;
+  background: linear-gradient(135deg, #d07f8c, #bd6676);
+  box-shadow: 0 10px 22px rgba(189, 102, 118, 0.25);
+}
+
+.vw-btn.primary:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.vw-btn.soft {
+  color: var(--vw-rose-600);
+  background: var(--vw-rose-100);
+}
+
+.vw-btn.soft:hover:not(:disabled) {
+  background: var(--vw-rose-200);
+}
+
+.vw-btn.outline {
+  min-width: 186px;
+  border: 1.5px solid #e1d6d1;
+  border-radius: 999px;
+  color: var(--vw-ink-2);
+  background: #fff;
+}
+
+.vw-btn.block {
+  width: 100%;
+}
+
+.vw-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+  box-shadow: none;
+}
+
+.vw-chip {
+  min-height: 38px;
+  padding: 0 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--vw-line);
+  border-radius: 10px;
+  color: var(--vw-ink-2);
+  background: #fff;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.vw-chip.rose {
+  border-color: transparent;
+  color: var(--vw-rose-600);
+  background: var(--vw-rose-100);
+}
+
+/* ---------- hero ---------- */
+
+.vw-hero {
+  position: relative;
+  min-height: 330px;
+  display: flex;
+  align-items: center;
+}
+
+.vw-hero.slim {
+  min-height: 250px;
+}
+
+.vw-hero-copy {
+  position: relative;
+  z-index: 1;
+  max-width: 52%;
+  padding: 24px 0;
+}
+
+.vw-hero-copy h1 {
+  margin: 0 0 18px;
+  font-size: 52px;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 1.15;
+}
+
+.vw-hero-copy p {
+  margin: 0;
+  color: var(--vw-ink-2);
+  font-size: 20px;
+  line-height: 1.65;
+}
+
+.vw-hero-copy .vw-hero-note {
+  margin-top: 16px;
+  font-size: 17px;
+}
+
+.vw-hero-art {
+  position: absolute;
+  right: -24px;
+  top: -18px;
+  pointer-events: none;
+}
+
+.vw-hero-art img {
+  display: block;
+  width: 100%;
+  height: auto;
+  /* 잘라낸 그림의 네모 테두리가 배경에 자연스럽게 섞이도록 */
+  -webkit-mask-image:
+    linear-gradient(to right, transparent, #000 10%, #000 93%, transparent),
+    linear-gradient(to bottom, transparent, #000 9%, #000 86%, transparent);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(to right, transparent, #000 10%, #000 93%, transparent),
+    linear-gradient(to bottom, transparent, #000 9%, #000 86%, transparent);
+  mask-composite: intersect;
+}
+
+.vw-hero-art.yesterday { width: 50%; }
+.vw-hero-art.diary-write { width: 46%; top: -64px; }
+.vw-hero-art.my-diaries { width: 46%; top: -10px; }
+.vw-hero-art.tmi-write { width: 50%; top: -6px; }
+.vw-hero-art.tmi-result { width: 52%; top: -12px; }
+
+/* ---------- emotion ---------- */
+
+.vw-emotion-face {
+  flex: none;
+  display: block;
+  border-radius: 50%;
+}
+
+.vw-emotion-badge {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.vw-emotion-badge.rose { color: #c96a5c; background: #fde6e2; }
+.vw-emotion-badge.rose svg { color: #f0a23e; }
+.vw-emotion-badge.blue { color: #4f86b4; background: #e4f0fb; }
+.vw-emotion-badge.blue svg { color: #6aa2d3; }
+.vw-emotion-badge.lavender { color: #7d63a8; background: #eee7f8; }
+.vw-emotion-badge.lavender svg { color: #b39bd8; }
+.vw-emotion-badge.beige { color: #8f7a44; background: #f6efda; }
+.vw-emotion-badge.beige svg { color: #d4b04f; }
+
+/* ---------- 공용 카드 ---------- */
+
+.vw-sheet {
+  position: relative;
+  z-index: 1;
+  padding: 30px;
+  border-radius: var(--vw-radius);
+  background: rgba(255, 253, 251, 0.94);
+  box-shadow: var(--vw-shadow);
+}
+
+.vw-room-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.vw-room-card strong {
+  font-size: 21px;
+  font-weight: 800;
+}
+
+.vw-room-card > span {
+  color: var(--vw-ink-2);
+  font-size: 15px;
+}
+
+.vw-room-card.vw-room-card-pink {
+  margin-bottom: 14px;
+  padding: 26px 30px;
+  border-radius: 16px;
+  background: linear-gradient(110deg, #fde6e8, #fdeeee);
+}
+
+.vw-room-card.vw-room-card-hero {
+  width: 480px;
+  max-width: 100%;
+  margin-top: 26px;
+  padding: 22px 26px;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: var(--vw-shadow);
+}
+
+.vw-field-error {
+  margin: 6px 2px 0;
+  color: #c4495a;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* 줄 노트 */
+.vw-lined-paper {
+  position: relative;
+  min-height: 176px;
+  padding: 26px 22px 18px;
+  border-radius: 6px;
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent 29px,
+      rgba(205, 175, 160, 0.28) 29px,
+      rgba(205, 175, 160, 0.28) 30px
+    ),
+    var(--vw-paper);
+  background-position: 0 22px;
+  box-shadow: 0 2px 10px rgba(150, 103, 96, 0.08);
+}
+
+.vw-lined-paper p {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  padding-right: 34px;
+  color: #3f3634;
+  font-family: var(--vw-hand);
+  font-size: 22px;
+  line-height: 30px;
+  display: -webkit-box;
+  -webkit-line-clamp: 5;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.vw-tape {
+  position: absolute;
+  top: -12px;
+  right: 22px;
+  width: 58px;
+  height: 37px;
+  background: url("../assets/design/paper-tape.png") center / contain no-repeat;
+  transform: rotate(4deg);
+}
+
+.vw-paper-sprig {
+  position: absolute;
+  right: 6px;
+  top: 34px;
+  width: 38px;
+}
+
+/* ---------- 어제의 우리 ---------- */
+
+.vw-yesterday-grid {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.vw-yesterday-card {
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  border-radius: var(--vw-radius);
+  background: rgba(255, 253, 251, 0.96);
+  box-shadow: var(--vw-shadow);
+}
+
+.vw-yesterday-card header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.vw-yesterday-card header > div {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.vw-yesterday-card header strong {
+  overflow: hidden;
+  font-size: 18px;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.vw-yesterday-card header small {
+  color: var(--vw-ink-3);
+  font-size: 14px;
+}
+
+.vw-yesterday-card .vw-lined-paper {
+  flex: 1;
+}
+
+.vw-tomorrow-banner {
+  margin-top: 16px;
+  padding: 20px 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+  border-radius: var(--vw-radius);
+  background: linear-gradient(100deg, #e7f1fb, #f2f7fc 55%, #e9f2fb);
+}
+
+.vw-tomorrow-banner img {
+  width: 100px;
+  flex: none;
+}
+
+.vw-tomorrow-banner strong {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 21px;
+  font-weight: 800;
+}
+
+.vw-tomorrow-banner p {
+  margin: 0;
+  color: var(--vw-ink-2);
+  font-size: 15px;
+}
+
+/* ---------- 교환일기 쓰기 ---------- */
+
+.vw-date-card {
+  margin-bottom: 24px;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  border-radius: 16px;
+  background: #fdeeee;
+}
+
+.vw-date-icon {
+  width: 54px;
+  height: 54px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  color: var(--vw-rose-500);
+  background: #fff;
+}
+
+.vw-date-card small {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--vw-ink-2);
+  font-size: 13px;
+}
+
+.vw-date-card strong {
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.vw-form-row {
+  margin-bottom: 22px;
+  display: grid;
+  grid-template-columns: 200px minmax(0, 1fr);
+  align-items: start;
+  gap: 18px;
+}
+
+.vw-form-label {
+  padding-top: 14px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 17px;
+  font-weight: 800;
+}
+
+.vw-form-label svg {
+  flex: none;
+  color: var(--vw-rose-500);
+}
+
+.vw-form-label small {
+  display: block;
+  margin-top: 4px;
+  color: var(--vw-ink-3);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.vw-emotion-picker {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.vw-emotion-picker button {
+  min-height: 56px;
+  padding: 8px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1.5px solid var(--vw-line);
+  border-radius: 14px;
+  color: var(--vw-ink-2);
+  background: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.vw-emotion-picker button.active {
+  border-color: var(--vw-rose-400);
+  color: var(--vw-rose-600);
+  background: var(--vw-rose-50);
+}
+
+.vw-field {
+  position: relative;
+  display: block;
+}
+
+.vw-field textarea,
+.vw-input {
+  width: 100%;
+  border: 1.5px solid var(--vw-line);
+  border-radius: 14px;
+  background: #fff;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.vw-field textarea {
+  display: block;
+  min-height: 150px;
+  padding: 18px 18px 36px;
+  resize: vertical;
+  color: var(--vw-ink);
+  font: inherit;
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+.vw-field textarea.tall {
+  min-height: 170px;
+}
+
+.vw-field textarea::placeholder,
+.vw-input input::placeholder {
+  color: #a49a95;
+}
+
+.vw-field textarea:focus,
+.vw-input:focus-within {
+  outline: none;
+  border-color: var(--vw-rose-400);
+  box-shadow: 0 0 0 3px rgba(217, 135, 147, 0.15);
+}
+
+.vw-field textarea[aria-invalid="true"],
+.vw-input:has(input[aria-invalid="true"]) {
+  border-color: #e08593;
+}
+
+.vw-count {
+  position: absolute;
+  right: 16px;
+  top: calc(100% - 30px);
+  color: var(--vw-ink-3);
+  font-size: 13px;
+}
+
+.vw-field:has(.vw-field-error) .vw-count {
+  top: auto;
+  bottom: 38px;
+}
+
+.vw-input {
+  min-height: 54px;
+  padding: 0 18px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.vw-input input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: var(--vw-ink);
+  font: inherit;
+  font-size: 16px;
+}
+
+.vw-input small {
+  flex: none;
+  color: var(--vw-ink-3);
+  font-size: 13px;
+}
+
+.vw-write-footer {
+  margin-top: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.vw-write-footer p {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--vw-ink-2);
+  font-size: 15px;
+}
+
+.vw-write-footer p svg {
+  flex: none;
+  color: var(--vw-ink-3);
+}
+
+.vw-write-actions {
+  display: flex;
+  gap: 14px;
+}
+
+.vw-write-actions .soft {
+  min-width: 136px;
+}
+
+.vw-write-actions .primary {
+  min-width: 176px;
+}
+
+/* ---------- 내가 쓴 일기 ---------- */
+
+.vw-tabs {
+  position: relative;
+  z-index: 1;
+  margin-bottom: 22px;
+  padding: 6px;
+  display: inline-flex;
+  gap: 4px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: var(--vw-shadow);
+}
+
+.vw-tabs button {
+  min-width: 130px;
+  min-height: 46px;
+  padding: 0 22px;
+  border: 0;
+  border-radius: 14px;
+  color: var(--vw-ink-2);
+  background: transparent;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.vw-tabs button.active {
+  color: #fff;
+  background: linear-gradient(135deg, #e3909c, #c86d7c);
+  box-shadow: 0 6px 14px rgba(189, 102, 118, 0.25);
+}
+
+.vw-my-diary-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.vw-my-diary-card {
+  padding: 22px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  border-radius: var(--vw-radius);
+  background: rgba(255, 253, 251, 0.96);
+  box-shadow: var(--vw-shadow);
+}
+
+.vw-my-diary-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--vw-ink-2);
+  font-size: 14px;
+}
+
+.vw-status {
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.vw-status.open { color: #3e8653; background: #e3f2e6; }
+.vw-status.wait { color: #4a81b3; background: #e3eefa; }
+
+.vw-my-diary-card > p {
+  margin: 0;
+  color: var(--vw-ink-2);
+  font-size: 15px;
+  line-height: 1.6;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.vw-my-diary-actions {
+  margin-top: auto;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+/* ---------- TMI 작성 ---------- */
+
+.vw-notice {
+  margin-bottom: 16px;
+  padding: 16px 22px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  border-radius: 14px;
+  background: #fdeeee;
+}
+
+.vw-notice-icon {
+  width: 46px;
+  height: 46px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: var(--vw-rose-500);
+  background: #fbdfe2;
+}
+
+.vw-notice strong {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--vw-rose-600);
+  font-size: 17px;
+  font-weight: 800;
+}
+
+.vw-notice span:not(.vw-notice-icon) {
+  color: var(--vw-ink-3);
+  font-size: 14px;
+}
+
+.vw-tmi-send {
+  width: 510px;
+  max-width: 100%;
+  margin: 22px auto 0;
+  display: flex;
+}
+
+.vw-tmi-hint {
+  margin: 16px 0 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  color: var(--vw-ink-2);
+  font-size: 15px;
+  text-align: center;
+}
+
+.vw-tmi-hint svg {
+  flex: none;
+  color: #8c8fa0;
+}
+
+/* ---------- TMI 추리 ---------- */
+
+.vw-guess {
+  text-align: center;
+}
+
+.vw-guess-head {
+  padding: 34px 0 6px;
+}
+
+.vw-room-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 22px;
+  border-radius: 999px;
+  color: var(--vw-ink);
+  background: var(--vw-rose-100);
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.vw-room-chip svg {
+  color: var(--vw-rose-500);
+}
+
+.vw-guess-head h1 {
+  margin: 22px 0 0;
+  font-size: 42px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.vw-guess-letter {
+  position: relative;
+  width: 620px;
+  max-width: 100%;
+  margin: 18px auto 0;
+  container-type: inline-size;
+}
+
+.vw-guess-letter img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* 편지지 줄 위치(이미지 기준)에 맞춰 글씨 올림 */
+.vw-guess-letter p {
+  position: absolute;
+  left: 18%;
+  right: 15%;
+  top: 18.6cqw;
+  margin: 0;
+  color: #3f3634;
+  font-family: var(--vw-hand);
+  font-size: 4.9cqw;
+  line-height: 7.25cqw;
+  text-align: center;
+  transform: rotate(-3.2deg);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.vw-guess-progress {
+  width: fit-content;
+  margin: 6px auto 0;
+  padding: 7px 34px;
+  border-radius: 999px;
+  color: var(--vw-ink-2);
+  background: rgba(255, 255, 255, 0.92);
+  font-size: 17px;
+}
+
+.vw-guess-progress b {
+  color: var(--vw-rose-500);
+}
+
+.vw-candidates {
+  width: 920px;
+  max-width: 100%;
+  margin: 26px auto 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 16px;
+}
+
+.vw-candidate {
+  min-height: 150px;
+  padding: 18px 12px;
+  display: grid;
+  place-items: center;
+  border: 4px solid rgba(255, 255, 255, 0.95);
+  border-radius: 18px;
+  box-shadow: var(--vw-shadow);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.vw-candidate:hover {
+  transform: translateY(-2px);
+}
+
+.vw-candidate strong {
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.vw-candidate.tone-0 { background: #fde4e7; }
+.vw-candidate.tone-1 { background: #fdf1d8; }
+.vw-candidate.tone-2 { background: #e2eefa; }
+.vw-candidate.tone-3 { background: #e5f2e3; }
+
+.vw-candidate.active {
+  box-shadow: 0 0 0 3px var(--vw-rose-400), var(--vw-shadow);
+}
+
+.vw-guess-submit {
+  min-width: 280px;
+  margin-top: 28px;
+}
+
+/* ---------- TMI 결과 ---------- */
+
+.vw-result-answer {
+  position: relative;
+  z-index: 1;
+  padding: 32px;
+  border: 8px solid rgba(255, 255, 255, 0.85);
+  border-radius: var(--vw-radius);
+  background: linear-gradient(135deg, #fde5e8, #fceef0);
+  box-shadow: var(--vw-shadow);
+}
+
+.vw-result-chip {
+  display: inline-block;
+  padding: 8px 20px;
+  border-radius: 999px;
+  color: var(--vw-rose-600);
+  background: #fbd9de;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.vw-result-author {
+  margin: 18px 0 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px dashed rgba(201, 111, 126, 0.3);
+}
+
+.vw-result-author h2 {
+  margin: 0 0 10px;
+  font-size: 34px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.vw-result-author p {
+  margin: 0;
+  color: var(--vw-ink-2);
+  font-size: 18px;
+}
+
+.vw-result-quote {
+  position: relative;
+  margin: 0;
+  padding: 22px 54px;
+  border-radius: 14px;
+  color: #4d4340;
+  background: rgba(253, 226, 230, 0.6);
+  font-family: var(--vw-hand);
+  font-size: 25px;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.vw-result-quote::before,
+.vw-result-quote::after {
+  position: absolute;
+  color: rgba(214, 120, 135, 0.35);
+  font-family: Georgia, serif;
+  font-size: 56px;
+  line-height: 1;
+}
+
+.vw-result-quote::before {
+  content: "\201C";
+  left: 16px;
+  top: 10px;
+}
+
+.vw-result-quote::after {
+  content: "\201D";
+  right: 16px;
+  bottom: -10px;
+}
+
+.vw-result-actions {
+  margin-top: 22px;
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+}
+
+.vw-result-actions .primary {
+  min-width: 200px;
+  border-radius: 999px;
+}
