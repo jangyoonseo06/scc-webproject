@@ -111,4 +111,22 @@ public class GlobalExceptionHandler {
         body.put("message", "유효하지 않은 토큰입니다");
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(body);
     }
+
+    @ExceptionHandler(DiaryNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleDiaryNotFound(DiaryNotFoundException e) {
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("status", 404);
+        body.put("error", "Not Found");
+        body.put("message", e.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
+    }
+
+    @ExceptionHandler(DiaryNotOpenException.class)
+    public ResponseEntity<Map<String, Object>> handleDiaryNotOpen(DiaryNotOpenException e) {
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("status", 403);
+        body.put("error", "Forbidden");
+        body.put("message", e.getMessage());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(body);
+    }
 }

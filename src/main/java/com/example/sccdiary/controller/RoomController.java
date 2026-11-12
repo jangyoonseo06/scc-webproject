@@ -182,14 +182,4 @@ public class RoomController {
 
         return ResponseEntity.ok(response);
     }
-
-    @GetMapping("/{roomId}/diaries/yesterday")
-    public ResponseEntity<Map<String, Object>> getYesterdayDiaries(@PathVariable Long roomId) {
-        Map<String, Object> response = new LinkedHashMap<>();
-        response.put("success", true);
-        response.put("message", "어제의 우리 조회 성공");
-        response.put("data", diaryService.getYesterdayDiaries(roomId));
-
-        return ResponseEntity.ok(response);
-    }
 }

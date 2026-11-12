@@ -12,7 +12,7 @@ paths:
   /diaries/write:
     post:
       summary: 일기 작성 및 임시저장
-      description: 새로운 일기, 오늘의 감정, 친구에게 할 질문을 작성하거나 임시저장
+      description: 새로운 일기, 오늘의 감정, 친구에게 할 질문을 작성하거나 임시저장합니다. 작성자는 Authorization 헤더의 토큰으로 식별합니다.
       tags:
         - Diary
       security:
@@ -32,20 +32,30 @@ paths:
               schema:
                 $ref: '#/components/schemas/DiaryResponse'
         '400':
-          description: 잘못된 요청 (필수 값 누락 등)
+          description: 잘못된 요청 (필수 값 누락, 길이 초과, 올바르지 않은 감정 값 등)
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
               examples:
                 validationError:
+                  summary: 필수 값 누락
                   value:
                     status: 400
                     error: "Bad Request"
                     message: "입력값이 올바르지 않습니다."
                     details:
-                      - field : "content"
-                        reason : "내용은 필수 입력값입니다."
+                      - field: "content"
+                        reason: "내용은 필수 입력값입니다."
+                invalidEmotion:
+                  summary: 올바르지 않은 감정 값
+                  value:
+                    status: 400
+                    error: "Bad Request"
+                    message: "입력값이 올바르지 않습니다."
+                    details:
+                      - field: "emotion"
+                        reason: "올바르지 않은 감정 값입니다."
         '401':
           description: 인증 실패
           content:
@@ -102,7 +112,7 @@ components:
           type: boolean
           example: true
           description: 임시저장 여부 (true 임시저장, false 작성완료)
-    
+
     DiaryResponse:
       type: object
       properties:
@@ -115,8 +125,9 @@ components:
         data:
           type: object
           properties:
-            DiaryId:
+            diaryId:
               type: integer
+              format: int64
               description: 생성된 일기의 고유 diaryId
               example: 1001
 
@@ -129,23 +140,22 @@ components:
       properties:
         status:
           type: integer
-          example: 401
+          example: 400
         error:
           type: string
-          example: "Unauthorized"
+          example: "Bad Request"
         message:
           type: string
-          example: "인증 실패"
+          example: "입력값이 올바르지 않습니다."
         details:
           type: array
-          description: "유효성 검사 실패"
+          description: 유효성 검사 실패 상세 목록
           items:
             type: object
             properties:
               field:
                 type: string
-                example: "password"
+                example: "content"
               reason:
                 type: string
-                example: "비밀번호는 8자 이상이어야 합니다."
-          example: "인증 실패"
+                example: "내용은 필수 입력값입니다."

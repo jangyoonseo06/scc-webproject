@@ -12,7 +12,10 @@ paths:
   /diaries/{diaryId}:
     get:
       summary: 일기 조회
-      description: 일기 ID를 통해 일기 조회 및 다음 날 공개 기능
+      description: >-
+        일기 ID로 일기를 조회합니다.
+        작성자 본인은 임시저장을 포함해 언제든 조회할 수 있습니다.
+        다른 사람은 작성자와 같은 방의 멤버여야 하고, 임시저장이 아닌 일기를 작성일 다음 날부터 조회할 수 있습니다.
       tags:
         - Diary
       security:
@@ -24,6 +27,7 @@ paths:
           description: 조회할 일기 고유 ID
           schema:
             type: integer
+            format: int64
             example: 1001
       responses:
         '200':
@@ -44,9 +48,8 @@ paths:
                     status: 401
                     error: "Unauthorized"
                     message: "유효하지 않은 토큰입니다"
-        
         '403':
-          description: 공개 시간 전 접근 차단
+          description: 공개 시간 전 접근 차단 (작성자가 아닌 사람이 임시저장 일기나 작성일 당일 일기를 조회)
           content:
             application/json:
               schema:
@@ -57,9 +60,8 @@ paths:
                     status: 403
                     error: "Forbidden"
                     message: "아직 열리지 않은 일기입니다. 내일 확인해주세요."
-        
         '404':
-          description: 일기 미존재
+          description: 일기 미존재 또는 조회 권한 없음 (작성자와 같은 방이 아닌 경우에도 일기의 존재를 알리지 않기 위해 404로 응답)
           content:
             application/json:
               schema:
@@ -78,7 +80,7 @@ components:
       scheme: bearer
       bearerFormat: JWT
 
-  schemas:    
+  schemas:
     DiaryReadResponse:
       type: object
       properties:
@@ -93,7 +95,8 @@ components:
           properties:
             diaryId:
               type: integer
-              description: 수정된 일기의 고유 ID
+              format: int64
+              description: 조회한 일기의 고유 ID
               example: 1001
             date:
               type: string
@@ -125,23 +128,10 @@ components:
       properties:
         status:
           type: integer
-          example: 401
+          example: 403
         error:
           type: string
-          example: "Unauthorized"
+          example: "Forbidden"
         message:
           type: string
-          example: "인증 실패"
-        details:
-          type: array
-          description: "유효성 검사 실패"
-          items:
-            type: object
-            properties:
-              field:
-                type: string
-                example: "password"
-              reason:
-                type: string
-                example: "비밀번호는 8자 이상이어야 합니다."
-          example: "인증 실패"
+          example: "아직 열리지 않은 일기입니다. 내일 확인해주세요."

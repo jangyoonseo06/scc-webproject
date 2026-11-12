@@ -1,34 +1,32 @@
 package com.example.sccdiary.dto;
 
-import lombok.Getter;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
 
 public class DiaryRequest {
 
-    private Long roomId;
-    private Long userId;
+    @NotBlank(message = "내용은 필수 입력값 입니다.")
+    @Size(max = 2000, message = "내용은 2000자 이하여야 합니다.")
     private String content;
+
+    @NotBlank(message = "친구에게 할 질문은 필수 입력값입니다.")
+    @Size(max = 100, message = "질문은 100자 이하여야 합니다.")
     private String questionToFriend;
+
+    @NotNull(message = "날짜는 필수 입력값입니다.")
     private LocalDate date;
+
+    @NotBlank(message = "감정은 필수 입력값입니다.")
+    @Pattern(regexp = "HAPPY|CALM|NORMAL|UPSET|TIRED|EXCITED",
+            message = "올바르지 않은 감정 값입니다.")
     private String emotion;
-    private boolean isTemporary;
 
-    public Long getRoomId() {
-        return roomId;
-    }
-
-    public void setRoomId(Long roomId) {
-        this.roomId = roomId;
-    }
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
+    @NotNull(message = "임시저장 여부는 필수 입력값입니다.")
+    private Boolean isTemporary;
 
     public String getContent() {
         return content;
@@ -62,11 +60,11 @@ public class DiaryRequest {
         this.emotion = emotion;
     }
 
-    public boolean isTemporary() {
+    public Boolean getIsTemporary() {
         return isTemporary;
     }
 
-    public void setTemporary(boolean temporary) {
-        isTemporary = temporary;
+    public void setIsTemporary(Boolean isTemporary) {
+        this.isTemporary = isTemporary;
     }
 }

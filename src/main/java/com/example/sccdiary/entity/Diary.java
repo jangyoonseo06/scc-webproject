@@ -13,9 +13,6 @@ public class Diary {
     @Column(name = "diary_id")
     private Long diaryId;
 
-    @Column(name = "room_id", nullable = false)
-    private Long roomId;
-
     @Column(name = "user_id", nullable = false)
     private Long userId;
 
@@ -43,14 +40,6 @@ public class Diary {
 
     public void setDiaryId(Long diaryId) {
         this.diaryId = diaryId;
-    }
-
-    public Long getRoomId() {
-        return roomId;
-    }
-
-    public void setRoomId(Long roomId) {
-        this.roomId = roomId;
     }
 
     public Long getUserId() {
