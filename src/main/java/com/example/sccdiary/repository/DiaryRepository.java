@@ -12,4 +12,5 @@ public interface DiaryRepository extends JpaRepository<Diary, Long> {
             Long roomId,
             LocalDate diaryDate
     );
+    List<Diary> findByUserIdOrderByDiaryDateDesc(Long userId);
 }

@@ -17,7 +17,7 @@ public class DiaryService {
     }
 
 
-    // 일기 작성 및 임시저장
+    // ?쇨린 ?묒꽦 諛??꾩떆???
     public Diary createDiary(
             Long roomId,
             Long userId,
@@ -43,7 +43,7 @@ public class DiaryService {
     public Diary getDiary(Long diaryId) {
         return diaryRepository.findById(diaryId)
                 .orElseThrow(() ->
-                        new IllegalArgumentException("일기를 찾을 수 없습니다.")
+                        new IllegalArgumentException("?쇨린瑜?李얠쓣 ???놁뒿?덈떎.")
                 );
     }
     public Diary updateDiary(
@@ -52,15 +52,15 @@ public class DiaryService {
             String mood,
             String question
     ) {
-        // 1. 수정할 일기 찾기
+        // 1. ?섏젙???쇨린 李얘린
         Diary diary = getDiary(diaryId);
 
-        // 2. 일기 내용 변경
+        // 2. ?쇨린 ?댁슜 蹂寃?
         diary.setContent(content);
         diary.setMood(mood);
         diary.setQuestion(question);
 
-        // 3. 변경된 일기 저장
+        // 3. 蹂寃쎈맂 ?쇨린 ???
         return diaryRepository.save(diary);
     }
     public void deleteDiary(Long diaryId) {
@@ -71,25 +71,25 @@ public class DiaryService {
     }
     public boolean canViewDiary(Diary diary, Long viewerId) {
 
-        // 본인이 작성한 일기는 조회 가능
+        // 蹂몄씤???묒꽦???쇨린??議고쉶 媛??
         if (diary.getUserId().equals(viewerId)) {
             return true;
         }
 
-        // 임시저장 일기는 친구에게 공개하지 않음
+        // ?꾩떆????쇨린??移쒓뎄?먭쾶 怨듦컻?섏? ?딆쓬
         if (diary.isTemporary()) {
             return false;
         }
 
-        // 다른 사람의 일기는 작성 날짜 다음 날부터 공개
+        // ?ㅻⅨ ?щ엺???쇨린???묒꽦 ?좎쭨 ?ㅼ쓬 ?좊???怨듦컻
         return diary.getDiaryDate().isBefore(LocalDate.now());
     }
     public List<Diary> getYesterdayDiaries(Long roomId) {
 
-        // 오늘 날짜에서 하루 빼기
+        // ?ㅻ뒛 ?좎쭨?먯꽌 ?섎（ 鍮쇨린
         LocalDate yesterday = LocalDate.now().minusDays(1);
 
-        // 해당 방에서 어제 작성한 일기 조회
+        // ?대떦 諛⑹뿉???댁젣 ?묒꽦???쇨린 議고쉶
         return diaryRepository.findByRoomIdAndDiaryDateAndIsTemporaryFalse(
                 roomId,
                 yesterday
@@ -97,4 +97,7 @@ public class DiaryService {
     }
 
 
+    public List<Diary> getMyDiaries(Long userId) {
+        return diaryRepository.findByUserIdOrderByDiaryDateDesc(userId);
+    }
 }

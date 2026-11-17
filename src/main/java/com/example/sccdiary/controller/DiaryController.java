@@ -37,7 +37,7 @@ public class DiaryController {
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 Map.of(
                         "success", true,
-                        "message", "일기 작성 성공",
+                        "message", "?쇨린 ?묒꽦 ?깃났",
                         "data", Map.of("diaryId", diary.getDiaryId())
                 )
         );
@@ -58,7 +58,7 @@ public class DiaryController {
         return ResponseEntity.ok(
                 Map.of(
                         "success", true,
-                        "message", "일기 수정 성공",
+                        "message", "?쇨린 ?섏젙 ?깃났",
                         "data", Map.of("diaryId", diary.getDiaryId())
                 )
         );
@@ -70,12 +70,12 @@ public class DiaryController {
     ) {
         Diary diary = diaryService.getDiary(diaryId);
 
-        // 일기 공개 여부 확인
+        // ?쇨린 怨듦컻 ?щ? ?뺤씤
         if (!diaryService.canViewDiary(diary, viewerId)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
                     Map.of(
                             "success", false,
-                            "message", "이 일기는 다음 날부터 공개됩니다."
+                            "message", "???쇨린???ㅼ쓬 ?좊???怨듦컻?⑸땲??"
                     )
             );
         }
@@ -83,7 +83,7 @@ public class DiaryController {
         return ResponseEntity.ok(
                 Map.of(
                         "success", true,
-                        "message", "일기 조회 성공",
+                        "message", "?쇨린 議고쉶 ?깃났",
                         "data", diary
                 )
         );
@@ -95,7 +95,7 @@ public class DiaryController {
         return ResponseEntity.ok(
                 Map.of(
                         "success", true,
-                        "message", "어제의 우리 조회 성공",
+                        "message", "?댁젣???곕━ 議고쉶 ?깃났",
                         "data", diaryService.getYesterdayDiaries(roomId)
                 )
         );
@@ -108,8 +108,16 @@ public class DiaryController {
         return ResponseEntity.ok(
                 Map.of(
                         "success", true,
-                        "message", "일기 삭제 성공"
+                        "message", "?쇨린 ??젣 ?깃났"
                 )
         );
+    }
+    @GetMapping("/my")
+    public ResponseEntity<?> getMyDiaries(@RequestParam Long userId) {
+        return ResponseEntity.ok(Map.of(
+                "success", true,
+                "message", "내가 쓴 일기 조회 성공",
+                "data", diaryService.getMyDiaries(userId)
+        ));
     }
 }
