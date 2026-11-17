@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Mail,
   Settings,
@@ -17,6 +17,7 @@ import {
 
 import "./App.css";
 import { LoginPage, SignupPage } from "./AuthPages";
+import { useToast } from "./components/status/toastContext";
 import {
   MyRoomsPage,
   YesterdayPage,
@@ -27,6 +28,7 @@ import {
   TmiResultPage,
   DiaryReadModal,
 } from "./FeaturePages";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const CURRENT_USER = {
   id: 100,
@@ -57,6 +59,7 @@ function makeInviteCode() {
 }
 
 function App() {
+  const toast = useToast();
   const [page, setPage] = useState("login");
 
   // 기존 방 기능은 그대로 유지
@@ -75,68 +78,402 @@ function App() {
 
   // 새로 추가된 일기 읽기 모달 상태
   const [selectedDiary, setSelectedDiary] = useState(null);
+  const [diaries, setDiaries] = useState([]);
+  const [tmis, setTmis] = useState([]);
+  const [tmiResult, setTmiResult] = useState(null);
+  const [guessedTmiContent, setGuessedTmiContent] = useState("");
+  const handleLogout = () => {
+  localStorage.removeItem("accessToken");
+  localStorage.removeItem("refreshToken");
 
-  const handleCreateRoom = () => {
-    const trimmedName = roomName.trim();
+  setRoom(null);
+  setTmis([]);
+  setDiaries([]);
+  setSelectedDiary(null);
 
-    if (!trimmedName) {
-      setCreateError("방 이름을 입력해주세요.");
+  setPage("login");
+};
+  const handleTmiSubmit = async (payload) => {
+  const token = localStorage.getItem("accessToken");
+
+  if (!token) {
+    alert("로그인이 필요합니다.");
+    setPage("login");
+    return;
+  }
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/tmi`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(payload),
+    });
+
+    const result = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+      toast.error(result.message || "TMI 작성에 실패했습니다.");
       return;
     }
 
-    if (trimmedName.length > 20) {
-      setCreateError("방 이름은 최대 20자까지 입력할 수 있어요.");
+    toast.success("TMI 작성이 완료되었습니다.");
+    setPage("tmi-guess");
+  } catch (error) {
+    console.error(error);
+    toast.error("서버와 통신하지 못했습니다.");
+  }
+};
+const handleTmiGuess = async ({ tmiId, guessedUserId }) => {
+  const token = localStorage.getItem("accessToken");
+
+  if (!token) {
+    toast.error("로그인이 필요합니다.");
+    setPage("login");
+    return;
+  }
+
+  try {
+    const selectedTmi = tmis.find((tmi) => tmi.tmiId === tmiId);
+
+    const response = await fetch(`${API_BASE_URL}/tmi/${tmiId}/guess`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        guessedUserId,
+      }),
+    });
+
+    const result = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+      toast.error(result.message || "TMI 추리에 실패했습니다.");
       return;
     }
 
-    const newRoom = {
-      id: Date.now(),
-      name: trimmedName,
-      inviteCode: makeInviteCode(),
-      createdAt: "2026년 10월 5일",
+    setTmiResult(result.data);
+    setGuessedTmiContent(selectedTmi?.content || "");
+    setPage("tmi-result");
+  } catch (error) {
+    console.error(error);
+    toast.error("서버와 통신하지 못했습니다.");
+  }
+};
+const handleDiarySubmit = async (payload) => {
+  const token = localStorage.getItem("accessToken");
+
+  if (!token) {
+    toast.error("로그인이 필요합니다.");
+    setPage("login");
+    return;
+  }
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/diaries/write`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(payload),
+    });
+
+    const result = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+      toast.error(result.message || "일기 작성에 실패했습니다.");
+      return;
+    }
+
+    toast.success("일기 작성이 완료되었습니다.");
+    setPage("my-diaries");
+  } catch (error) {
+    console.error(error);
+    toast.error("서버와 통신하지 못했습니다.");
+  }
+};
+const fetchMyRoom = async () => {
+  const token = localStorage.getItem("accessToken");
+
+  if (!token) return;
+
+  try {
+    const roomsResponse = await fetch(`${API_BASE_URL}/rooms/my`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const roomsResult = await roomsResponse.json().catch(() => ({}));
+
+    if (!roomsResponse.ok) {
+      console.error("방 목록 조회 실패:", roomsResult);
+      return;
+    }
+
+    const rooms = roomsResult.data?.rooms || [];
+
+    if (rooms.length === 0) {
+      setRoom(null);
+      return;
+    }
+
+    const firstRoom = rooms[0];
+
+    const [inviteResponse, membersResponse] = await Promise.all([
+      fetch(`${API_BASE_URL}/rooms/${firstRoom.roomId}/invite-code`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }),
+      fetch(`${API_BASE_URL}/rooms/${firstRoom.roomId}/members`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }),
+    ]);
+
+    const inviteResult = await inviteResponse.json().catch(() => ({}));
+    const membersResult = await membersResponse.json().catch(() => ({}));
+
+    setRoom({
+      id: firstRoom.roomId,
+      name: firstRoom.roomName,
+      inviteCode: inviteResult.data?.inviteCode || "",
+      createdAt: "",
+      members: (membersResult.data?.members || []).map((member) => ({
+        id: member.userId,
+        name: member.name,
+      })),
+      roomMembersNumber: firstRoom.roomMembersNumber,
+    });
+  } catch (error) {
+    console.error("방 조회 오류:", error);
+  }
+};
+    const fetchMyDiaries = async () => {
+  const token = localStorage.getItem("accessToken");
+
+  if (!token) {
+    toast.error("로그인이 필요합니다.");
+    setPage("login");
+    return;
+  }
+
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/diaries/me?isTemporary=false`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    const result = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+      toast.error(result.message || "일기 목록 조회에 실패했습니다.");
+      return;
+    }
+
+    setDiaries(result.data?.diaries || []);
+  } catch (error) {
+    console.error(error);
+    toast.error("서버와 통신하지 못했습니다.");
+  }
+};
+const fetchTmis = async () => {
+  const token = localStorage.getItem("accessToken");
+
+  if (!token || !room?.id) {
+    setTmis([]);
+    return;
+  }
+
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/rooms/${room.id}/tmi`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    const result = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+      toast.error(result.message || "TMI 목록 조회에 실패했습니다.");
+      return;
+    }
+
+    setTmis(result.data?.tmis || []);
+  } catch (error) {
+    console.error(error);
+    toast.error("서버와 통신하지 못했습니다.");
+  }
+};
+
+useEffect(() => {
+  if (page === "my-diaries") {
+    fetchMyDiaries();
+  }
+}, [page]);
+useEffect(() => {
+  if (page === "main") {
+    fetchMyRoom();
+  }
+}, [page]);
+
+useEffect(() => {
+  if (page === "tmi-guess") {
+    fetchTmis();
+  }
+}, [page, room]);
+  const handleCreateRoom = async () => {
+  const trimmedName = roomName.trim();
+
+  if (!trimmedName) {
+    setCreateError("방 이름을 입력해주세요.");
+    return;
+  }
+
+  if (trimmedName.length > 10) {
+    setCreateError("방 이름은 최대 10자까지 입력할 수 있어요.");
+    return;
+  }
+
+  const token = localStorage.getItem("accessToken");
+
+  if (!token) {
+    toast.error("로그인이 필요합니다.");
+    setPage("login");
+    return;
+  }
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/rooms/create`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        roomName: trimmedName,
+        roomMembersNumber: 10,
+      }),
+    });
+
+    const result = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+      setCreateError(result.message || "방 생성에 실패했습니다.");
+      return;
+    }
+
+    const createdRoom = {
+      id: result.data.roomId,
+      name: result.data.roomName,
+      inviteCode: result.data.inviteCode,
+      createdAt: "오늘",
       members: [CURRENT_USER],
+      roomMembersNumber: result.data.roomMembersNumber,
     };
 
-    setRoom(newRoom);
+    setRoom(createdRoom);
     setCreateModalOpen(false);
     setRoomName("");
     setCreateError("");
-  };
 
-  const handleJoinRoom = () => {
-    const normalizedCode = joinCode.trim().toUpperCase();
+    toast.success("방이 생성되었습니다.");
+  } catch (error) {
+    console.error(error);
+    setCreateError("서버와 통신하지 못했습니다.");
+  }
+};
+  const handleJoinRoom = async () => {
+  const normalizedCode = joinCode.trim().toUpperCase();
 
-    if (!normalizedCode) {
-      setJoinError("초대 코드를 입력해주세요.");
+  if (!normalizedCode) {
+    setJoinError("초대 코드를 입력해주세요.");
+    return;
+  }
+
+  if (normalizedCode.length !== 6) {
+    setJoinError("초대 코드는 6자리입니다.");
+    return;
+  }
+
+  const token = localStorage.getItem("accessToken");
+
+  if (!token) {
+    toast.error("로그인이 필요합니다.");
+    setPage("login");
+    return;
+  }
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/rooms/join`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        inviteCode: normalizedCode,
+      }),
+    });
+
+    const result = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+      setJoinError(result.message || "방 참여에 실패했습니다.");
       return;
     }
 
-    if (normalizedCode.length !== 6) {
-      setJoinError("초대 코드는 6자리입니다.");
-      return;
-    }
+    const roomId = result.data.roomId;
 
-    // 백엔드 연결 전 테스트용 정상 코드
-    if (normalizedCode !== MOCK_ROOM.inviteCode) {
-      setJoinError("존재하지 않는 초대 코드입니다. 다시 확인해주세요.");
-      return;
-    }
+    const membersResponse = await fetch(
+      `${API_BASE_URL}/rooms/${roomId}/members`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
 
-    if (room?.inviteCode === normalizedCode) {
-      setJoinError("이미 참여한 방입니다.");
-      return;
-    }
+    const membersResult = await membersResponse.json().catch(() => ({}));
 
-    const joinedRoom = {
-      ...MOCK_ROOM,
-      members: [...MOCK_ROOM.members, CURRENT_USER],
-    };
+    setRoom({
+      id: roomId,
+      name: result.data.roomName,
+      inviteCode: normalizedCode,
+      createdAt: "",
+      members: (membersResult.data?.members || []).map((member) => ({
+        id: member.userId,
+        name: member.name,
+      })),
+    });
 
-    setRoom(joinedRoom);
     setJoinModalOpen(false);
     setJoinCode("");
     setJoinError("");
-  };
+
+    toast.success("방에 참여했습니다.");
+  } catch (error) {
+    console.error(error);
+    setJoinError("서버와 통신하지 못했습니다.");
+  }
+};
 
   const handleCopyCode = async () => {
     if (!room) return;
@@ -185,6 +522,7 @@ function App() {
         onRoom={() => setPage("rooms")}
         onDiary={() => setPage("my-diaries")}
         onTmi={() => setPage("tmi-write")}
+        onLogout={handleLogout}
       />
 
       {page === "main" && (
@@ -242,6 +580,7 @@ function App() {
       {page === "diary-write" && (
         <DiaryWritePage
           room={room}
+          onSubmit={handleDiarySubmit}
           onBack={() => setPage("main")}
           onGoMyDiaries={() => setPage("my-diaries")}
         />
@@ -249,6 +588,7 @@ function App() {
 
       {page === "my-diaries" && (
         <MyDiariesPage
+          diaries={diaries}
           onBack={() => setPage("main")}
           onReadDiary={(diary) => setSelectedDiary(diary)}
           onWrite={() => setPage("diary-write")}
@@ -258,6 +598,7 @@ function App() {
       {page === "tmi-write" && (
         <TmiWritePage
           room={room}
+          onSubmit={handleTmiSubmit}
           onBack={() => setPage("main")}
           onStartGuess={() => setPage("tmi-guess")}
         />
@@ -266,17 +607,21 @@ function App() {
       {page === "tmi-guess" && (
         <TmiGuessPage
           room={room}
+          tmis={tmis}
           onBack={() => setPage("tmi-write")}
-          onShowResult={() => setPage("tmi-result")}
+          onSubmit={handleTmiGuess}
         />
       )}
 
       {page === "tmi-result" && (
-        <TmiResultPage
-          onBack={() => setPage("tmi-guess")}
-          onAgain={() => setPage("tmi-guess")}
-        />
-      )}
+  <TmiResultPage
+    room={room}
+    result={tmiResult}
+    tmiContent={guessedTmiContent}
+    onBack={() => setPage("tmi-guess")}
+    onAgain={() => setPage("tmi-guess")}
+  />
+)}
 
       {createModalOpen && (
         <CreateRoomModal
@@ -334,6 +679,7 @@ function Header({
   onRoom,
   onDiary,
   onTmi,
+  onLogout,
 }) {
   const roomActive = page === "rooms" || page === "room";
 
@@ -375,6 +721,12 @@ function Header({
             onClick={onTmi}
           >
             TMI
+          </button>
+          <button
+            className="nav-item logout-button"
+            onClick={onLogout}
+>
+            로그아웃
           </button>
         </nav>
       </div>
@@ -874,8 +1226,6 @@ function JoinRoomModal({
       </label>
 
       {error && <p className="error-message">● {error}</p>}
-
-      <p className="input-guide">테스트용 정상 코드: KX7B9Q</p>
 
       <div className="modal-buttons">
         <button className="cancel-button" onClick={onClose}>

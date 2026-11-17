@@ -18,7 +18,7 @@ body {
 /* ---------- 상단 메뉴 ---------- */
 
 .header {
-  position: sticky;
+  position: static;
   top: 0;
   z-index: 30;
 }
@@ -98,6 +98,18 @@ body {
 .nav-item.active {
   color: #b55b6a;
   background: #fbe3e6;
+}
+.logout-button {
+  margin-left: 8px;
+  color: #777;
+  border: 1px solid #ead7da;
+  background: #fff;
+}
+
+.logout-button:hover {
+  color: #b55b6a;
+  background: #fff4f5;
+  border-color: #e4bfc5;
 }
 
 /* ---------- 메인 (시안 8) ---------- */
