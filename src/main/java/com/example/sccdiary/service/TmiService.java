@@ -14,6 +14,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -39,10 +41,16 @@ public class TmiService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException("해당 사용자를 찾을 수 없습니다"));
 
+        LocalDate today = LocalDate.now(ZoneId.of("Asia/Seoul"));
+        if (tmiRepository.existsByUserIdAndTmiDate(user.getId(), today)) {
+            throw new IllegalArgumentException("오늘은 이미 TMI를 작성했습니다.");
+        }
+
         Tmi tmi = Tmi.builder()
                 .content(request.getContent())
                 .isFake(request.getIsFake())
                 .user(user)
+                .tmiDate(today)
                 .build();
 
         Tmi savedTmi = tmiRepository.save(tmi);
