@@ -21,4 +21,6 @@ public interface RoomMemberRepository extends JpaRepository<RoomMember, Long> {
           and b.userId = :userB
         """)
     boolean existsSharedRoom(@Param("userA") Long userA, @Param("userB") Long userB);
+
+    List<RoomMember> findByUserId(Long userId);
 }

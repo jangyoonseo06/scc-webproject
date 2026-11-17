@@ -1,5 +1,6 @@
 package com.example.sccdiary.service;
 
+import com.example.sccdiary.dto.MyRoomListResponse;
 import com.example.sccdiary.entity.Room;
 import com.example.sccdiary.entity.RoomMember;
 import com.example.sccdiary.entity.User;
@@ -109,7 +110,18 @@ public class RoomService {
         return userRepository.findAllById(userIds);
     }
 
-    public List<Room> getMyRooms(Long userId) {
-        return roomRepository.findAllByMemberUserId(userId);
+    public MyRoomListResponse getMyRooms(Long userId) {
+        List<Long> roomIds = roomMemberRepository.findByUserId(userId).stream()
+                .map(RoomMember::getRoomId)
+                .toList();
+
+        List<MyRoomListResponse.Item> items = roomRepository.findAllById(roomIds).stream()
+                .sorted((a, b) -> Long.compare(b.getRoomId(), a.getRoomId()))
+                .map(r -> new MyRoomListResponse.Item(
+                        r.getRoomId(), r.getRoomName(), r.getMaxMembers()))
+                .toList();
+
+        return new MyRoomListResponse(true, "내 방 목록 조회 성공",
+                new MyRoomListResponse.Data(items));
     }
 }

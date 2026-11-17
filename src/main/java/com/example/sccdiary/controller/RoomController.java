@@ -1,6 +1,7 @@
 package com.example.sccdiary.controller;
 
 import com.example.sccdiary.dto.InviteCodeResponse;
+import com.example.sccdiary.dto.MyRoomListResponse;
 import com.example.sccdiary.dto.RoomCreateRequest;
 import com.example.sccdiary.dto.RoomCreateResponse;
 import com.example.sccdiary.entity.Room;
@@ -153,33 +154,18 @@ public class RoomController {
         return ResponseEntity.ok(response);
     }
 
+    private String stripBearer(String token) {
+        if (token != null && token.startsWith("Bearer ")) {
+            return token.substring(7);
+        }
+        return token;
+    }
+
     @GetMapping("/my")
-    public ResponseEntity<Map<String, Object>> getMyRooms(
+    public ResponseEntity<MyRoomListResponse> getMyRooms(
             @RequestHeader("Authorization") String token) {
 
-        if (token != null && token.startsWith("Bearer ")) {
-            token = token.substring(7);
-        }
-        Long userId = authService.getUserIdFromToken(token);
-
-        List<Map<String, Object>> rooms = roomService.getMyRooms(userId).stream()
-                .map(r -> {
-                    Map<String, Object> m = new LinkedHashMap<>();
-                    m.put("roomId", r.getRoomId());
-                    m.put("roomName", r.getRoomName());
-                    m.put("roomMembersNumber", r.getMaxMembers());
-                    return m;
-                })
-                .toList();
-
-        Map<String, Object> data = new LinkedHashMap<>();
-        data.put("rooms", rooms);
-
-        Map<String, Object> response = new LinkedHashMap<>();
-        response.put("success", true);
-        response.put("message", "내 방 목록 조회 성공");
-        response.put("data", data);
-
-        return ResponseEntity.ok(response);
+        Long userId = authService.getUserIdFromToken(stripBearer(token));
+        return ResponseEntity.ok(roomService.getMyRooms(userId));
     }
 }
