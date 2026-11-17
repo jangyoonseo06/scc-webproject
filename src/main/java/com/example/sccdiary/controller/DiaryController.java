@@ -1,9 +1,6 @@
 package com.example.sccdiary.controller;
 
-import com.example.sccdiary.dto.DiaryReadResponse;
-import com.example.sccdiary.dto.DiaryRequest;
-import com.example.sccdiary.dto.DiaryWriteResponse;
-import com.example.sccdiary.dto.YesterdayDiaryResponse;
+import com.example.sccdiary.dto.*;
 import com.example.sccdiary.entity.Diary;
 import com.example.sccdiary.service.AuthService;
 import com.example.sccdiary.service.DiaryService;
@@ -96,5 +93,14 @@ public class DiaryController {
             return token.substring(7);
         }
         return token;
+    }
+
+    @GetMapping("/diaries/me")
+    public ResponseEntity<MyDiaryListResponse> getMyDiaries(
+            @RequestHeader("Authorization") String token,
+            @RequestParam(required = false) Boolean isTemporary) {
+
+        Long userId = authService.getUserIdFromToken(stripBearer(token));
+        return ResponseEntity.ok(diaryService.getMyDiaries(userId, isTemporary));
     }
 }

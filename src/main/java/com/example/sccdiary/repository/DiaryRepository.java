@@ -16,4 +16,8 @@ public interface DiaryRepository extends JpaRepository<Diary, Long> {
             + "order by d.diaryId desc")
     List<Diary> findPublishedByRoomAndDate(@Param("roomId") Long roomId,
                                            @Param("date") LocalDate date);
+
+    List<Diary> findByUserIdOrderByDiaryDateDescDiaryIdDesc(Long userId);
+
+    List<Diary> findByUserIdAndIsTemporaryOrderByDiaryDateDescDiaryIdDesc(Long userId, boolean isTemporary);
 }

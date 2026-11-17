@@ -2,6 +2,7 @@ package com.example.sccdiary.service;
 
 import com.example.sccdiary.dto.DiaryReadResponse;
 import com.example.sccdiary.dto.DiaryRequest;
+import com.example.sccdiary.dto.MyDiaryListResponse;
 import com.example.sccdiary.dto.YesterdayDiaryResponse;
 import com.example.sccdiary.entity.Diary;
 import com.example.sccdiary.entity.User;
@@ -143,5 +144,24 @@ public class DiaryService {
             throw new IllegalArgumentException("본인이 작성한 일기만 " + action + "할 수 있습니다.");
         }
         return diary;
+    }
+
+    public MyDiaryListResponse getMyDiaries(Long userId, Boolean isTemporary) {
+        List<Diary> diaries = (isTemporary == null)
+                ? diaryRepository.findByUserIdOrderByDiaryDateDescDiaryIdDesc(userId)
+                : diaryRepository.findByUserIdAndIsTemporaryOrderByDiaryDateDescDiaryIdDesc(userId, isTemporary);
+
+        List<MyDiaryListResponse.Item> items = diaries.stream()
+                .map(d -> new MyDiaryListResponse.Item(
+                        d.getDiaryId(),
+                        d.getDiaryDate().toString(),
+                        d.getContent(),
+                        d.getQuestion(),
+                        d.getMood(),
+                        d.isTemporary()))
+                .toList();
+
+        return new MyDiaryListResponse(true, "내 일기 목록 조회 성공",
+                new MyDiaryListResponse.Data(items.size(), items));
     }
 }
